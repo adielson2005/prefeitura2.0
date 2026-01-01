@@ -1,0 +1,25 @@
+import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { Role } from '@prisma/client';
+
+export class CreateUserDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8, { message: 'A senha deve ter no mínimo 8 caracteres' })
+  password: string;
+
+  @IsEnum(Role)
+  @IsNotEmpty()
+  role: Role;
+
+  @IsString()
+  @IsNotEmpty()
+  siteId: string;
+}
