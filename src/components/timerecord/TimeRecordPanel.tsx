@@ -3,6 +3,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LogIn, Coffee, UtensilsCrossed, LogOut, Clock, CheckCircle2 } from "lucide-react";
+import { dataService } from "@/lib/dataService";
+import { getCurrentUser } from "@/lib/secureAuth";
 
 interface TimeRecordPanelProps {
   className?: string;
@@ -68,9 +70,27 @@ export function TimeRecordPanel({ className }: TimeRecordPanelProps) {
   };
 
   const registerTime = (type: RecordType) => {
+    const currentTime = getCurrentTime();
     setRecords(prev => prev.map(r => 
-      r.type === type ? { ...r, time: getCurrentTime() } : r
+      r.type === type ? { ...r, time: currentTime } : r
     ));
+
+    // Registrar atividade no dataService
+    const user = getCurrentUser();
+    const activityTypeMap: Record<RecordType, "ENTRADA" | "SAIDA" | "RETORNO_ALMOCO" | "ALERTA"> = {
+      ENTRADA: "ENTRADA",
+      SAIDA_ALMOCO: "SAIDA",
+      RETORNO_ALMOCO: "RETORNO_ALMOCO",
+      SAIDA: "SAIDA"
+    };
+
+    dataService.addActivity({
+      type: activityTypeMap[type],
+      name: user?.username || "Usuário",
+      time: currentTime,
+      area: "Sede Principal",
+      date: new Date().toISOString()
+    });
   };
 
   const nextRecord = getNextRecord();
@@ -145,12 +165,17 @@ export function TimeRecordPanel({ className }: TimeRecordPanelProps) {
                 <Button
                   size="sm"
                   className={cn(
-                    "w-full mt-1 h-8 text-xs font-bold text-white",
-                    `${config.bgColor} hover:opacity-90 shadow-md`
+                    "w-full mt-1 h-9 text-xs font-black text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200",
+                    record.type === "ENTRADA" 
+                      ? "bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 hover:from-emerald-500 hover:via-emerald-400 hover:to-emerald-500 border-2 border-emerald-400/50 ring-2 ring-emerald-500/30" 
+                      : `${config.bgColor} hover:opacity-90`
                   )}
                   onClick={() => registerTime(record.type)}
                 >
-                  Registrar
+                  <span className="flex items-center gap-1.5">
+                    <Icon className="h-4 w-4" />
+                    {record.type === "ENTRADA" ? "REGISTRAR AGORA" : "Registrar"}
+                  </span>
                 </Button>
               ) : (
                 <p className="text-[10px] text-slate-500 font-medium">Aguardando...</p>

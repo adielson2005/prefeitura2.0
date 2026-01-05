@@ -99,13 +99,31 @@ export function ProfessionalTable({ professionals, className }: ProfessionalTabl
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-1">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-secondary">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0 hover:bg-secondary"
+                      onClick={() => handleView(professional)}
+                      title="Visualizar"
+                    >
                       <Eye className="h-4 w-4 text-muted-foreground" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-secondary">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0 hover:bg-secondary"
+                      onClick={() => handleEdit(professional)}
+                      title="Editar"
+                    >
                       <Edit2 className="h-4 w-4 text-muted-foreground" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-secondary">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 w-8 p-0 hover:bg-secondary"
+                      onClick={() => handleDelete(professional)}
+                      title="Mais opções"
+                    >
                       <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                     </Button>
                   </div>

@@ -12,11 +12,24 @@ interface StatusCardProps {
   className?: string;
 }
 
+// ✅ Sistema padronizado de cores
 const statusConfig = {
-  EM_SERVICO: { label: "Em Serviço", color: "bg-emerald-500/30 text-emerald-300 border-emerald-500/50" },
-  FOLGA: { label: "Folga", color: "bg-slate-500/30 text-slate-300 border-slate-500/50" },
-  ATRASADO: { label: "Atrasado", color: "bg-amber-500/30 text-amber-300 border-amber-500/50" },
-  AUSENTE: { label: "Ausente", color: "bg-red-500/30 text-red-300 border-red-500/50" },
+  EM_SERVICO: { 
+    label: "Em Serviço", 
+    color: "bg-emerald-500/30 text-emerald-300 border-emerald-500/50" // Verde = Ativo/Positivo
+  },
+  FOLGA: { 
+    label: "Folga", 
+    color: "bg-amber-500/30 text-amber-300 border-amber-500/50" // Amarelo = Atenção
+  },
+  ATRASADO: { 
+    label: "Atrasado", 
+    color: "bg-amber-500/30 text-amber-300 border-amber-500/50" // Amarelo = Atenção
+  },
+  AUSENTE: { 
+    label: "Ausente", 
+    color: "bg-red-500/30 text-red-300 border-red-500/50" // Vermelho = Crítico
+  },
 };
 
 const categoryConfig = {
@@ -37,11 +50,11 @@ export function StatusCard({
   
   return (
     <div className={cn(
-      "bg-gradient-to-br from-slate-800/40 via-slate-800/20 to-slate-900/30 backdrop-blur-md rounded-lg border border-slate-700/50 p-3 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-slate-600/50 cursor-pointer shadow-lg relative overflow-hidden group",
+      "bg-gradient-to-br from-slate-800/50 via-slate-800/30 to-slate-900/40 backdrop-blur-md rounded-lg border border-slate-700/50 p-3 flex items-center gap-3 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-2xl hover:border-slate-600/60 cursor-pointer shadow-lg relative overflow-hidden group",
       className
     )}>
       {/* Gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-500/0 to-slate-500/0 group-hover:from-slate-500/10 group-hover:to-slate-500/5 transition-all duration-300 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-500/0 to-slate-500/0 group-hover:from-violet-500/10 group-hover:to-purple-500/5 transition-all duration-300 pointer-events-none"></div>
 
       <div className="relative flex-shrink-0">
         <Avatar className="h-11 w-11 border-2 border-slate-700/50 shadow-lg ring-2 ring-slate-500/20 group-hover:ring-slate-500/40 transition-all">

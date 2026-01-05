@@ -17,6 +17,7 @@ import {
   UserCog,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { secureLogout } from "@/lib/secureAuth";
 
 const mainNavItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -52,15 +53,23 @@ export function AppSidebar() {
       to={item.url}
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 rounded-lg font-bold text-sm transition-all duration-300 group relative overflow-hidden",
-        isActive(item.url) && "text-purple-300 bg-gradient-to-r from-purple-950/60 to-purple-900/40 border border-purple-700/50 shadow-lg shadow-purple-500/20",
-        !isActive(item.url) && "text-slate-400 hover:text-purple-400 hover:bg-slate-800/50 border border-transparent hover:border-purple-700/30",
+        isActive(item.url) && "text-white bg-gradient-to-r from-violet-600/80 via-purple-600/70 to-violet-600/80 border border-violet-500/60 shadow-lg shadow-violet-500/30",
+        !isActive(item.url) && "text-slate-400 hover:text-violet-300 hover:bg-slate-800/60 border border-transparent hover:border-violet-700/40 hover:shadow-md",
         collapsed && "justify-center px-2"
       )}
     >
-      <item.icon className="h-4 w-4 flex-shrink-0 transition-all group-hover:scale-125 group-hover:text-purple-400" />
+      {/* Barra lateral colorida para item ativo */}
+      {isActive(item.url) && (
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-violet-400 via-purple-400 to-violet-500 rounded-r-full shadow-lg shadow-violet-500/50"></div>
+      )}
+      
+      <item.icon className={cn(
+        "h-4 w-4 flex-shrink-0 transition-all duration-300",
+        isActive(item.url) ? "text-white scale-110" : "group-hover:scale-110 group-hover:text-violet-400"
+      )} />
       {!collapsed && <span className="truncate text-xs">{item.title}</span>}
       {isActive(item.url) && !collapsed && (
-        <div className="absolute right-2 w-2 h-2 rounded-full bg-gradient-to-r from-purple-400 to-violet-400 shadow-lg shadow-purple-500/50\"></div>
+        <div className="absolute right-2 w-2 h-2 rounded-full bg-gradient-to-r from-violet-300 to-purple-300 shadow-lg shadow-violet-400/60 animate-pulse"></div>
       )}
     </NavLink>
   );
@@ -82,17 +91,17 @@ export function AppSidebar() {
       )}>
         {!collapsed && (
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 border border-slate-600/60 flex items-center justify-center flex-shrink-0 shadow-lg shadow-slate-900/50 hover:shadow-slate-900/70 transition-all hover:scale-110">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-600 via-purple-600 to-violet-700 border-2 border-violet-500/60 flex items-center justify-center flex-shrink-0 shadow-xl shadow-violet-500/40 hover:shadow-violet-500/60 transition-all hover:scale-110 ring-2 ring-violet-400/20">
               <Building2 className="h-5 w-5 text-white font-bold" />
             </div>
             <div className="min-w-0">
               <h1 className="font-display font-black text-sm text-white truncate">Prefeitura</h1>
-              <p className="text-[10px] bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent font-semibold truncate">Vigilância</p>
+              <p className="text-[10px] bg-gradient-to-r from-violet-300 to-purple-300 bg-clip-text text-transparent font-semibold truncate">Vigilância Municipal</p>
             </div>
           </div>
         )}
         {collapsed && (
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 via-violet-600 to-purple-700 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 transition-all">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-600 via-purple-600 to-violet-700 border-2 border-violet-500/60 flex items-center justify-center flex-shrink-0 shadow-xl shadow-violet-500/40 hover:shadow-violet-500/60 transition-all ring-2 ring-violet-400/20">
             <Building2 className="h-5 w-5 text-white font-bold" />
           </div>
         )}
@@ -103,7 +112,7 @@ export function AppSidebar() {
         {/* Main */}
         <div className="space-y-1">
           {!collapsed && (
-            <p className="px-3 text-[10px] font-black uppercase tracking-widest text-transparent bg-gradient-to-r from-purple-300 via-violet-300 to-purple-300 bg-clip-text mb-3 opacity-90">
+            <p className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 opacity-80">
               Principal
             </p>
           )}
@@ -112,10 +121,17 @@ export function AppSidebar() {
           ))}
         </div>
 
+        {/* Divisor visual */}
+        <div className="relative py-2">
+          <div className="absolute inset-0 flex items-center px-3">
+            <div className="w-full border-t border-slate-700/60"></div>
+          </div>
+        </div>
+
         {/* Management */}
         <div className="space-y-1">
           {!collapsed && (
-            <p className="px-3 text-[10px] font-black uppercase tracking-widest text-transparent bg-gradient-to-r from-purple-300 via-violet-300 to-purple-300 bg-clip-text mb-3 opacity-90">
+            <p className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 opacity-80">
               Gestão
             </p>
           )}
@@ -124,10 +140,17 @@ export function AppSidebar() {
           ))}
         </div>
 
+        {/* Divisor visual */}
+        <div className="relative py-2">
+          <div className="absolute inset-0 flex items-center px-3">
+            <div className="w-full border-t border-slate-700/60"></div>
+          </div>
+        </div>
+
         {/* Reports */}
         <div className="space-y-1">
           {!collapsed && (
-            <p className="px-3 text-[10px] font-black uppercase tracking-widest text-transparent bg-gradient-to-r from-purple-300 via-violet-300 to-purple-300 bg-clip-text mb-3 opacity-90">
+            <p className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 opacity-80">
               Sistema
             </p>
           )}
@@ -163,12 +186,8 @@ export function AppSidebar() {
           variant="ghost"
           size="sm"
           onClick={() => {
-            // logout e redireciona
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('authTimestamp');
-            localStorage.removeItem('lastActivity');
-            navigate('/login');
+            secureLogout();
+            navigate('/login', { replace: true });
           }}
           className={cn(
             "w-full text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded-lg h-8 transition-all border border-red-700/30 hover:border-red-600/50",

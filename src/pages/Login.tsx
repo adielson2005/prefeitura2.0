@@ -1,43 +1,46 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Building2, Lock, Mail, Eye, EyeOff } from "lucide-react";
-import { login as saveLogin, touch } from "@/lib/auth";
+import { Building2, Lock, User, Eye, EyeOff, ShieldCheck, AlertTriangle, RefreshCw } from "lucide-react";
+import { secureLogin, getRemainingAttempts, resetLockout } from "@/lib/secureAuth";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [remainingAttempts, setRemainingAttempts] = useState(5);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-    // Simular verificação de credenciais
-    if (!email || !password) {
-      setError("Preencha todos os campos");
-      setIsLoading(false);
-      return;
-    }
-
-    // Simular delay de requisição
-    setTimeout(() => {
-      // Validação simples de email
-      if (email.includes("@")) {
-        // Armazenar token simulado usando utilitário
-        const simulated = "simulated-token-" + Date.now();
-        saveLogin(simulated, email);
-        touch();
+    try {
+      const result = await secureLogin(username, password);
+      
+      if (result.success && result.user) {
+        // Login bem-sucedido
         navigate("/");
       } else {
-        setError("Email inválido");
+        // Login falhado
+        setError(result.error || "Erro ao fazer login");
+        setRemainingAttempts(getRemainingAttempts());
       }
+    } catch (err) {
+      setError("Erro ao processar login. Tente novamente.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  const handleResetLockout = () => {
+    resetLockout();
+    setError("");
+    setRemainingAttempts(5);
+    alert("✅ Bloqueio removido! Você pode tentar fazer login novamente.");
   };
 
   return (
@@ -65,23 +68,24 @@ export default function Login() {
           {/* Linha de brilho no topo */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
 
-          <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">Bem-vindo</h2>
-          <p className="text-sm sm:text-base text-slate-400 mb-8 sm:mb-10">Faça login com suas credenciais</p>
+          <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">Acesso Seguro</h2>
+          <p className="text-sm sm:text-base text-slate-400 mb-8 sm:mb-10">Sistema restrito a administradores</p>
 
           <form onSubmit={handleLogin} className="space-y-5 sm:space-y-6">
-            {/* Email Input */}
+            {/* Username Input */}
             <div>
               <label className="block text-sm sm:text-base font-bold text-slate-200 mb-2.5">
-                Email do Gerente
+                Usuário
               </label>
               <div className="relative group">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-slate-300 transition-colors" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-slate-300 transition-colors" />
                 <input
-                  type="email"
-                  placeholder="seu.email@prefeitura.gov.br"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-lg border border-slate-700/40 bg-slate-800/40 text-sm sm:text-base text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/50 focus:border-slate-500/50 transition-all shadow-md hover:bg-slate-800/50"
+                  type="text"
+                  placeholder="admin ou gerente"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
+                  className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-lg border border-slate-700/40 bg-slate-800/40 text-sm sm:text-base text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all shadow-md hover:bg-slate-800/50"
                 />
               </div>
             </div>
@@ -95,10 +99,11 @@ export default function Login() {
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-slate-300 transition-colors" />
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder="Mínimo 8 caracteres"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-12 py-3 sm:py-3.5 rounded-lg border border-slate-700/40 bg-slate-800/40 text-sm sm:text-base text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/50 focus:border-slate-500/50 transition-all shadow-md hover:bg-slate-800/50"
+                  autoComplete="current-password"
+                  className="w-full pl-11 pr-12 py-3 sm:py-3.5 rounded-lg border border-slate-700/40 bg-slate-800/40 text-sm sm:text-base text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 transition-all shadow-md hover:bg-slate-800/50"
                 />
                 <button
                   type="button"
@@ -116,51 +121,102 @@ export default function Login() {
 
             {/* Error Message */}
             {error && (
-              <div className="p-3.5 rounded-lg bg-gradient-to-r from-red-950/60 to-red-900/40 border border-red-700/50 text-red-300 text-sm sm:text-base font-semibold shadow-lg">
-                {error}
+              <div className="p-4 rounded-lg bg-gradient-to-r from-red-950/80 to-red-900/60 border-2 border-red-700/60 shadow-xl">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-red-300 text-sm sm:text-base font-semibold">{error}</p>
+                    {remainingAttempts > 0 && remainingAttempts < 5 && (
+                      <p className="text-red-400 text-xs mt-1">
+                        {remainingAttempts} tentativa{remainingAttempts !== 1 ? 's' : ''} restante{remainingAttempts !== 1 ? 's' : ''}
+                      </p>
+                    )}
+                    {error.includes("bloqueada") && (
+                      <Button
+                        type="button"
+                        onClick={handleResetLockout}
+                        className="mt-3 w-full bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold py-2 px-3 rounded-lg transition-all flex items-center gap-2 justify-center"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        Desbloquear Agora
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between text-xs sm:text-sm">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="w-4 h-4 rounded border border-slate-700 bg-slate-800/50 text-slate-400 focus:ring-2 focus:ring-slate-500/40 cursor-pointer"
-                />
-                <span className="text-slate-400 group-hover:text-slate-300 transition-colors">
-                  Lembrar-me
-                </span>
-              </label>
-              <a href="#" className="text-slate-400 hover:text-slate-300 font-semibold transition-colors">
-                Esqueceu a senha?
-              </a>
+            {/* Security Notice */}
+            <div className="p-3.5 rounded-lg bg-gradient-to-r from-violet-950/40 to-purple-900/30 border border-violet-700/30">
+              <div className="flex items-start gap-2.5">
+                <ShieldCheck className="h-4 w-4 text-violet-400 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-violet-300">
+                  Sistema com proteção contra ataques. Após 5 tentativas incorretas, a conta será bloqueada por 15 minutos.
+                </p>
+              </div>
+            </div>
+
+            {/* Remember Me removed for security */}
+            <div className="text-xs sm:text-sm text-slate-400 text-center">
+              Sessão expira após 8 horas ou 30 minutos de inatividade
             </div>
 
             {/* Submit Button */}
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 sm:py-3.5 rounded-lg bg-gradient-to-r from-slate-700 to-slate-600 text-white font-black hover:from-slate-600 hover:to-slate-500 transition-all duration-200 shadow-lg shadow-slate-900/40 hover:shadow-slate-900/60 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              className="w-full py-3 sm:py-3.5 rounded-lg bg-gradient-to-r from-violet-700 via-violet-600 to-purple-600 text-white font-black hover:from-violet-600 hover:via-violet-500 hover:to-purple-500 transition-all duration-200 shadow-xl shadow-violet-900/40 hover:shadow-violet-900/60 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2 justify-center">
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span className="hidden sm:inline">Autenticando...</span>
-                  <span className="sm:hidden">Entrando...</span>
+                  <span>Autenticando...</span>
                 </div>
               ) : (
-                "Entrar"
+                <div className="flex items-center gap-2 justify-center">
+                  <ShieldCheck className="h-5 w-5" />
+                  <span>Entrar com Segurança</span>
+                </div>
               )}
             </Button>
           </form>
 
           {/* Footer */}
           <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-700/50">
-            <p className="text-center text-[10px] sm:text-sm text-slate-400">
-              Credenciais de teste: qualquer@email.com / qualquer senha
-            </p>
+            <div className="space-y-3">
+              <p className="text-center text-xs text-slate-400 font-semibold">
+                🔐 Credenciais de Acesso
+              </p>
+              
+              {/* Credencial de TESTE em destaque */}
+              <div className="bg-gradient-to-r from-emerald-950/60 to-emerald-900/40 rounded-lg p-4 border-2 border-emerald-600/50 shadow-lg">
+                <p className="text-center text-xs font-bold text-emerald-300 mb-2">
+                  ✨ TESTE RÁPIDO ✨
+                </p>
+                <div className="text-center">
+                  <p className="text-sm font-black text-white mb-1">
+                    Usuário: <span className="text-emerald-300">teste</span>
+                  </p>
+                  <p className="text-sm font-black text-white">
+                    Senha: <span className="text-emerald-300">123</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Credenciais de produção */}
+              <div className="bg-slate-900/40 rounded-lg p-3 border border-slate-700/30">
+                <p className="text-[11px] text-slate-400 mb-2">
+                  <span className="font-bold text-violet-400">admin</span> / adielsonA@2005!
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  <span className="font-bold text-violet-400">gerente</span> / gerente@A2005!
+                </p>
+              </div>
+              
+              <p className="text-center text-[10px] text-amber-400">
+                ⚠️ ALTERE AS SENHAS NO ARQUIVO secureAuth.ts
+              </p>
+            </div>
           </div>
         </div>
 

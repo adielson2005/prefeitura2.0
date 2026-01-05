@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { isAuthenticated, touch } from "@/lib/auth";
+import { isSessionValid, touchActivity, secureLogout } from "@/lib/secureAuth";
 import { MobileNavbar } from "@/components/layout/MobileNavbar";
 import Login from "./pages/Login";
 import Index from "./pages/Index";
@@ -63,7 +63,7 @@ export default App;
 
 function RequireAuth({ children }: { children: React.ReactElement }) {
   const location = useLocation();
-  if (!isAuthenticated()) {
+  if (!isSessionValid()) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   return children;
@@ -83,13 +83,13 @@ function AuthWatcher() {
 
   useEffect(() => {
     const events = ["mousemove", "keydown", "click", "touchstart"];
-    const handleActivity = () => touch();
+    const handleActivity = () => touchActivity();
     events.forEach((e) => window.addEventListener(e, handleActivity));
 
     // Checa sessão periodicamente (a cada 30s)
     const interval = setInterval(() => {
-      if (!isAuthenticated()) {
-        // isAuthenticated já faz logout caso expirado
+      if (!isSessionValid()) {
+        // isSessionValid já faz logout caso expirado
         navigate("/login");
       }
     }, 30 * 1000);

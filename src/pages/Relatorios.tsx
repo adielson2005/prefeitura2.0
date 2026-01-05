@@ -4,6 +4,11 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { pdfService } from "@/lib/pdfService";
+import { excelService } from "@/lib/excelService";
+import { dataService } from "@/lib/dataService";
+import { db } from "@/lib/db";
+import { format } from "date-fns";
 import { 
   FileText, 
   Download, 
@@ -14,7 +19,8 @@ import {
   TrendingUp,
   BarChart3,
   FileSpreadsheet,
-  FileIcon
+  FileIcon,
+  Loader2
 } from "lucide-react";
 
 const reportTypes = [
@@ -77,17 +83,95 @@ const recentReports = [
 
 export default function Relatorios() {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
+  const [downloadingReports, setDownloadingReports] = useState<Set<string>>(new Set());
+  const [downloadedReports, setDownloadedReports] = useState<Set<string>>(new Set());
 
-  const handleGenerateReport = (reportId: string, format: string) => {
+  const handleGenerateReport = async (reportId: string, format: string) => {
     const report = reportTypes.find(r => r.id === reportId);
     if (!report) return;
 
-    const csv = `${report.title} - ${format}\n${new Date().toISOString()}\n\nDados do relatório...`;
-    const blob = new Blob([csv], { type: "text/plain;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `${report.title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.${format === 'PDF' ? 'pdf' : 'xlsx'}`;
-    link.click();
+    const key = `${reportId}-${format}`;
+    setDownloadingReports(prev => new Set([...prev, key]));
+    
+    try {
+      // Aguardar processamento
+      await new Promise(r => setTimeout(r, 500));
+
+      // Gerar relatório baseado no tipo
+      switch (reportId) {
+        case "1": // Ponto Mensal
+          const timeRecords = await db.timeRecords.toArray();
+          if (format === "PDF") {
+            pdfService.generateTimeRecordsReport(timeRecords, format(new Date(), 'MMMM yyyy'));
+          } else {
+            excelService.generateTimeRecordsReport(timeRecords, format(new Date(), 'MMMM yyyy'));
+          }
+          break;
+
+        case "2": // Folgas e Ausências
+          const leaves = dataService.getLeaves();
+          if (format === "PDF") {
+            // Criar PDF de folgas (simplificado)
+            const activities = dataService.getActivities();
+            pdfService.generateActivitiesReport(activities);
+          } else {
+            excelService.generateLeavesReport(leaves);
+          }
+          break;
+
+        case "3": // Efetivo por Área
+          const professionals = dataService.getProfessionals();
+          pdfService.generateProfessionalsReport(professionals);
+          break;
+
+        case "4": // Irregularidades
+          const allProfessionals = dataService.getProfessionals();
+          const irregularProfessionals = allProfessionals.filter(
+            p => p.status === 'ATRASADO' || p.status === 'AUSENTE'
+          );
+          if (format === "PDF") {
+            pdfService.generateProfessionalsReport(irregularProfessionals);
+          } else {
+            excelService.generateProfessionalsReport(irregularProfessionals);
+          }
+          break;
+
+        case "6": // Dashboard Gerencial (Consolidado)
+          const allData = {
+            professionals: dataService.getProfessionals(),
+            records: await db.timeRecords.toArray(),
+            activities: dataService.getActivities(),
+            leaves: dataService.getLeaves()
+          };
+          excelService.generateConsolidatedReport(
+            allData.professionals,
+            allData.records,
+            allData.activities,
+            allData.leaves
+          );
+          break;
+
+        default:
+          // Fallback para outros tipos
+          const defaultProf = dataService.getProfessionals();
+          if (format === "PDF") {
+            pdfService.generateProfessionalsReport(defaultProf);
+          } else {
+            excelService.generateProfessionalsReport(defaultProf);
+          }
+      }
+      
+      setDownloadedReports(prev => new Set([...prev, key]));
+    } catch (error) {
+      console.error('Erro ao gerar relatório:', error);
+      alert('Erro ao gerar relatório. Tente novamente.');
+    } finally {
+      setDownloadingReports(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(key);
+        return newSet;
+      });
+    }
   };
 
   return (
@@ -160,25 +244,36 @@ export default function Relatorios() {
                         {report.description}
                       </p>
                       <div className="flex items-center gap-2">
-                        {report.formats.map((format) => (
-                          <Button
-                            key={format}
-                            variant="outline"
-                            size="sm"
-                            className="h-8 text-xs"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleGenerateReport(report.id, format);
-                            }}
-                          >
-                            {format === "PDF" ? (
-                              <FileIcon className="h-3.5 w-3.5 mr-1 text-status-danger" />
-                            ) : (
-                              <FileSpreadsheet className="h-3.5 w-3.5 mr-1 text-status-active" />
-                            )}
-                            {format}
-                          </Button>
-                        ))}
+                        {report.formats.map((format) => {
+                          const downloadKey = `${report.id}-${format}`;
+                          const isDownloading = downloadingReports.has(downloadKey);
+                          const isDownloaded = downloadedReports.has(downloadKey);
+                          
+                          return (
+                            <Button
+                              key={format}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleGenerateReport(report.id, format);
+                              }}
+                              disabled={isDownloading}
+                              className={`h-8 text-xs px-3 py-1 rounded transition-all ${
+                                isDownloaded
+                                  ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/30'
+                                  : isDownloading
+                                  ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30 cursor-wait'
+                                  : 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600'
+                              }`}
+                            >
+                              {format === "PDF" ? (
+                                <FileIcon className="h-3.5 w-3.5 mr-1" />
+                              ) : (
+                                <FileSpreadsheet className="h-3.5 w-3.5 mr-1" />
+                              )}
+                              {isDownloading ? 'Processando...' : isDownloaded ? '✓ Baixado' : format}
+                            </Button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>

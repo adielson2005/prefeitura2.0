@@ -1,6 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
+import { isSessionValid, touchActivity } from "@/lib/secureAuth";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -9,6 +11,30 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, title, subtitle }: AppLayoutProps) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Verificar autenticação ao montar
+    if (!isSessionValid()) {
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    // Registrar atividade
+    touchActivity();
+
+    // Verificar sessão periodicamente (a cada minuto)
+    const interval = setInterval(() => {
+      if (!isSessionValid()) {
+        navigate('/login', { replace: true });
+      } else {
+        touchActivity();
+      }
+    }, 60000); // 1 minuto
+
+    return () => clearInterval(interval);
+  }, [navigate]);
+
   return (
     <div className="flex min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800/50 to-slate-950 md:pb-0 pb-20 overflow-hidden">
       {/* Subtle professional background */}

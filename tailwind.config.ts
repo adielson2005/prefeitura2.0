@@ -79,6 +79,10 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        slate: {
+          350: "#b0b8c4",
+          450: "#8892a0",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

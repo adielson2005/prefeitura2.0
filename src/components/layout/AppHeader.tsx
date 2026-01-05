@@ -9,7 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
-import { getUserEmail, logout } from "@/lib/auth";
+import { getCurrentUser, secureLogout } from "@/lib/secureAuth";
+import { useState, useEffect } from "react";
 
 interface AppHeaderProps {
   title: string;
@@ -18,7 +19,35 @@ interface AppHeaderProps {
 
 export function AppHeader({ title, subtitle }: AppHeaderProps) {
   const navigate = useNavigate();
-  const email = getUserEmail();
+  const currentUser = getCurrentUser();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Atualizar contador de notificações não lidas
+  useEffect(() => {
+    const updateUnreadCount = () => {
+      try {
+        const raw = localStorage.getItem('notifications');
+        if (raw) {
+          const notifications = JSON.parse(raw);
+          const count = notifications.filter((n: any) => !n.read).length;
+          setUnreadCount(count);
+        } else {
+          setUnreadCount(0);
+        }
+      } catch {
+        setUnreadCount(0);
+      }
+    };
+
+    // Atualizar na montagem
+    updateUnreadCount();
+
+    // Atualizar quando o localStorage mudar (quando navegar de volta)
+    const interval = setInterval(updateUnreadCount, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <header className="h-16 bg-gradient-to-r from-slate-900 via-slate-800/70 to-slate-900 border-b border-slate-700/50 px-3 sm:px-4 md:px-6 flex items-center justify-between sticky top-0 z-20 shadow-lg shadow-slate-900/40 backdrop-blur-sm">
       {/* Professional line accent */}
@@ -58,9 +87,11 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
           className="relative h-9 w-9 text-slate-400 hover:text-white hover:bg-slate-700/40 rounded-lg transition-all border border-transparent hover:border-slate-600/40"
         >
           <Bell className="h-5 w-5" />
-          <span className="absolute -top-1 -right-1 h-4 w-4 bg-gradient-to-br from-red-500 via-red-600 to-red-700 rounded-full text-[9px] font-bold text-white flex items-center justify-center shadow-lg shadow-red-500/50">
-            3
-          </span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 h-4 w-4 bg-gradient-to-br from-red-500 via-red-600 to-red-700 rounded-full text-[9px] font-bold text-white flex items-center justify-center shadow-lg shadow-red-500/50">
+              {unreadCount}
+            </span>
+          )}
         </Button>
 
         {/* User Menu */}
@@ -74,13 +105,13 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
                     AD
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden lg:inline text-xs sm:text-sm font-semibold text-slate-200">{email ?? 'Usuário'}</span>
+                <span className="hidden lg:inline text-xs sm:text-sm font-semibold text-slate-200">{currentUser?.fullName ?? 'Usuário'}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44 bg-slate-900 border border-slate-700/50 shadow-2xl shadow-slate-900/50 backdrop-blur-md">
               <div className="px-2 py-1.5 border-b border-slate-700/30">
-                <p className="text-xs sm:text-sm font-semibold text-white">{email ?? 'Usuário'}</p>
-                <p className="text-[10px] text-slate-400">{email ?? 'sem-email@local'}</p>
+                <p className="text-xs sm:text-sm font-semibold text-white">{currentUser?.fullName ?? 'Usuário'}</p>
+                <p className="text-[10px] text-slate-400">{currentUser?.role ?? 'SEM PERMISSÃO'}</p>
               </div>
               <DropdownMenuSeparator className="bg-slate-700/30" />
               <DropdownMenuItem className="cursor-pointer text-xs sm:text-sm text-slate-300 hover:text-white focus:bg-slate-800/50 transition-all" onClick={() => navigate('/perfil')}>
@@ -94,8 +125,8 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
               <DropdownMenuItem
                 className="cursor-pointer text-red-500 hover:text-red-400 focus:bg-red-950/60 text-xs sm:text-sm transition-all"
                 onClick={() => {
-                  logout();
-                  navigate('/login');
+                  secureLogout();
+                  navigate('/login', { replace: true });
                 }}
               >
                 <LogOut className="mr-2 h-3.5 w-3.5" />
