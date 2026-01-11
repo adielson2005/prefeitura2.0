@@ -3,7 +3,7 @@
  * Sistema completo de login, registro e gerenciamento de sessão
  */
 
-import { supabase, User, UserRole } from './supabaseClient';
+import { supabase, User, UserRole } from "./supabaseClient";
 
 // Chaves do localStorage (mantém compatibilidade com sistema atual)
 const STORAGE_KEYS = {
@@ -17,22 +17,23 @@ const STORAGE_KEYS = {
  * Login com Supabase + Auditoria
  */
 export async function loginWithSupabase(
-  username: string, 
+  username: string,
   password: string,
-  loginType?: 'encarregado' | 'funcionario'
+  loginType?: "encarregado" | "funcionario"
 ): Promise<{ success: boolean; user?: User; error?: string }> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const auditData: any = {
     username,
-    login_type: loginType || 'direto',
-    logged_in_at: new Date().toISOString()
+    login_type: loginType || "direto",
+    logged_in_at: new Date().toISOString(),
   };
 
   try {
     // 1. Buscar usuário pelo username
     const { data: users, error: searchError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('username', username)
+      .from("users")
+      .select("*")
+      .eq("username", username)
       .limit(1);
 
     if (searchError) {
@@ -40,14 +41,19 @@ export async function loginWithSupabase(
       await registerLoginAudit({
         ...auditData,
         success: false,
-        error_message: `Erro no banco: ${searchError.message}`
+        error_message: `Erro no banco: ${searchError.message}`,
       });
 
-      console.error('Erro ao buscar usuário:', searchError);
-      console.error('Detalhes completos:', JSON.stringify(searchError, null, 2));
-      return { 
-        success: false, 
-        error: `Erro no banco: ${searchError.message || 'Erro desconhecido'}. Verifique se executou o SQL no Supabase.` 
+      console.error("Erro ao buscar usuário:", searchError);
+      console.error(
+        "Detalhes completos:",
+        JSON.stringify(searchError, null, 2)
+      );
+      return {
+        success: false,
+        error: `Erro no banco: ${
+          searchError.message || "Erro desconhecido"
+        }. Verifique se executou o SQL no Supabase.`,
       };
     }
 
@@ -56,10 +62,10 @@ export async function loginWithSupabase(
       await registerLoginAudit({
         ...auditData,
         success: false,
-        error_message: 'Usuário não encontrado'
+        error_message: "Usuário não encontrado",
       });
 
-      return { success: false, error: 'Usuário não encontrado' };
+      return { success: false, error: "Usuário não encontrado" };
     }
 
     const user = users[0] as User;
@@ -68,28 +74,28 @@ export async function loginWithSupabase(
 
     // 2. Verificar senha (hash SHA-256)
     const passwordHash = await hashPassword(password);
-    
+
     if (user.password_hash !== passwordHash) {
       // Registrar senha incorreta
       await registerLoginAudit({
         ...auditData,
         success: false,
-        error_message: 'Senha incorreta'
+        error_message: "Senha incorreta",
       });
 
-      return { success: false, error: 'Senha incorreta' };
+      return { success: false, error: "Senha incorreta" };
     }
 
     // 3. Login bem-sucedido! Atualizar último login
     await supabase
-      .from('users')
+      .from("users")
       .update({ last_login: new Date().toISOString() })
-      .eq('id', user.id);
+      .eq("id", user.id);
 
     // 4. Registrar login bem-sucedido na auditoria
     await registerLoginAudit({
       ...auditData,
-      success: true
+      success: true,
     });
 
     // 5. Salvar sessão no localStorage
@@ -98,26 +104,28 @@ export async function loginWithSupabase(
       username: user.username,
       fullName: user.full_name,
       role: user.role,
-      email: user.email
+      email: user.email,
     };
 
     localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(sessionData));
     localStorage.setItem(STORAGE_KEYS.LOGIN_TIMESTAMP, Date.now().toString());
     localStorage.setItem(STORAGE_KEYS.LAST_ACTIVITY, Date.now().toString());
-    localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, `sb_${user.id}_${Date.now()}`);
+    localStorage.setItem(
+      STORAGE_KEYS.AUTH_TOKEN,
+      `sb_${user.id}_${Date.now()}`
+    );
 
     return { success: true, user };
-
   } catch (error) {
     // Registrar erro inesperado
     await registerLoginAudit({
       ...auditData,
       success: false,
-      error_message: `Erro inesperado: ${error}`
+      error_message: `Erro inesperado: ${error}`,
     });
 
-    console.error('Erro no login:', error);
-    return { success: false, error: 'Erro inesperado no login' };
+    console.error("Erro no login:", error);
+    return { success: false, error: "Erro inesperado no login" };
   }
 }
 
@@ -140,7 +148,7 @@ async function registerLoginAudit(data: {
     const os = getOSName(userAgent);
     const device = getDeviceType(userAgent);
 
-    await supabase.from('login_audit').insert({
+    await supabase.from("login_audit").insert({
       user_id: data.user_id || null,
       username: data.username,
       role: data.role || null,
@@ -151,10 +159,10 @@ async function registerLoginAudit(data: {
       browser,
       os,
       device,
-      logged_in_at: data.logged_in_at
+      logged_in_at: data.logged_in_at,
     });
   } catch (error) {
-    console.error('Erro ao registrar auditoria:', error);
+    console.error("Erro ao registrar auditoria:", error);
     // Não falhar o login se auditoria falhar
   }
 }
@@ -163,33 +171,33 @@ async function registerLoginAudit(data: {
  * Detectar nome do navegador
  */
 function getBrowserName(userAgent: string): string {
-  if (userAgent.includes('Chrome')) return 'Chrome';
-  if (userAgent.includes('Firefox')) return 'Firefox';
-  if (userAgent.includes('Safari')) return 'Safari';
-  if (userAgent.includes('Edge')) return 'Edge';
-  if (userAgent.includes('Opera')) return 'Opera';
-  return 'Unknown';
+  if (userAgent.includes("Chrome")) return "Chrome";
+  if (userAgent.includes("Firefox")) return "Firefox";
+  if (userAgent.includes("Safari")) return "Safari";
+  if (userAgent.includes("Edge")) return "Edge";
+  if (userAgent.includes("Opera")) return "Opera";
+  return "Unknown";
 }
 
 /**
  * Detectar sistema operacional
  */
 function getOSName(userAgent: string): string {
-  if (userAgent.includes('Windows')) return 'Windows';
-  if (userAgent.includes('Mac')) return 'macOS';
-  if (userAgent.includes('Linux')) return 'Linux';
-  if (userAgent.includes('Android')) return 'Android';
-  if (userAgent.includes('iOS')) return 'iOS';
-  return 'Unknown';
+  if (userAgent.includes("Windows")) return "Windows";
+  if (userAgent.includes("Mac")) return "macOS";
+  if (userAgent.includes("Linux")) return "Linux";
+  if (userAgent.includes("Android")) return "Android";
+  if (userAgent.includes("iOS")) return "iOS";
+  return "Unknown";
 }
 
 /**
  * Detectar tipo de dispositivo
  */
 function getDeviceType(userAgent: string): string {
-  if (userAgent.includes('Mobile')) return 'Mobile';
-  if (userAgent.includes('Tablet')) return 'Tablet';
-  return 'Desktop';
+  if (userAgent.includes("Mobile")) return "Mobile";
+  if (userAgent.includes("Tablet")) return "Tablet";
+  return "Desktop";
 }
 
 /**
@@ -197,12 +205,12 @@ function getDeviceType(userAgent: string): string {
  */
 export function logout(): void {
   // Limpar localStorage
-  Object.values(STORAGE_KEYS).forEach(key => {
+  Object.values(STORAGE_KEYS).forEach((key) => {
     localStorage.removeItem(key);
   });
 
   // Redirecionar para login
-  window.location.href = '/login';
+  window.location.href = "/login";
 }
 
 /**
@@ -217,10 +225,10 @@ export function isAuthenticated(): boolean {
 /**
  * Obter usuário atual
  */
-export function getCurrentUser(): any {
+export function getCurrentUser(): User | null {
   const userData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
   if (!userData) return null;
-  
+
   try {
     return JSON.parse(userData);
   } catch {
@@ -233,13 +241,13 @@ export function getCurrentUser(): any {
  */
 export async function registerTimeRecord(
   userId: string,
-  punchType: 'ENTRADA' | 'INTERVALO' | 'RETORNO' | 'SAIDA',
+  punchType: "ENTRADA" | "INTERVALO" | "RETORNO" | "SAIDA",
   location?: { latitude: number; longitude: number; name?: string },
   notes?: string
 ) {
   try {
     const { data, error } = await supabase
-      .from('time_records')
+      .from("time_records")
       .insert({
         user_id: userId,
         punch_type: punchType,
@@ -247,20 +255,20 @@ export async function registerTimeRecord(
         latitude: location?.latitude,
         longitude: location?.longitude,
         location_name: location?.name,
-        notes: notes
+        notes: notes,
       })
       .select()
       .single();
 
     if (error) {
-      console.error('Erro ao registrar ponto:', error);
+      console.error("Erro ao registrar ponto:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Erro ao registrar ponto:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao registrar ponto:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
 
@@ -274,30 +282,30 @@ export async function getTimeRecords(
 ) {
   try {
     let query = supabase
-      .from('time_records')
-      .select('*')
-      .eq('user_id', userId)
-      .order('punch_time', { ascending: false });
+      .from("time_records")
+      .select("*")
+      .eq("user_id", userId)
+      .order("punch_time", { ascending: false });
 
     if (startDate) {
-      query = query.gte('punch_time', startDate.toISOString());
+      query = query.gte("punch_time", startDate.toISOString());
     }
 
     if (endDate) {
-      query = query.lte('punch_time', endDate.toISOString());
+      query = query.lte("punch_time", endDate.toISOString());
     }
 
     const { data, error } = await query;
 
     if (error) {
-      console.error('Erro ao buscar registros:', error);
+      console.error("Erro ao buscar registros:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Erro ao buscar registros:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao buscar registros:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
 
@@ -311,20 +319,20 @@ export async function getUserShifts(
 ) {
   try {
     const { data, error } = await supabase
-      .from('shifts')
-      .select('*')
-      .eq('user_id', userId)
-      .order('shift_date', { ascending: true });
+      .from("shifts")
+      .select("*")
+      .eq("user_id", userId)
+      .order("shift_date", { ascending: true });
 
     if (error) {
-      console.error('Erro ao buscar escalas:', error);
+      console.error("Erro ao buscar escalas:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Erro ao buscar escalas:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao buscar escalas:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
 
@@ -337,31 +345,34 @@ export async function updateUserProfile(
 ) {
   try {
     const { data, error } = await supabase
-      .from('users')
+      .from("users")
       .update(updates)
-      .eq('id', userId)
+      .eq("id", userId)
       .select()
       .single();
 
     if (error) {
-      console.error('Erro ao atualizar perfil:', error);
+      console.error("Erro ao atualizar perfil:", error);
       return { success: false, error: error.message };
     }
 
     // Atualizar localStorage se necessário
     const currentUser = getCurrentUser();
     if (currentUser && data) {
-      localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify({
-        ...currentUser,
-        fullName: data.full_name,
-        email: data.email
-      }));
+      localStorage.setItem(
+        STORAGE_KEYS.USER_DATA,
+        JSON.stringify({
+          ...currentUser,
+          fullName: data.full_name,
+          email: data.email,
+        })
+      );
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Erro ao atualizar perfil:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao atualizar perfil:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
 
@@ -376,36 +387,36 @@ export async function changePassword(
   try {
     // 1. Verificar senha atual
     const { data: user, error: fetchError } = await supabase
-      .from('users')
-      .select('password_hash')
-      .eq('id', userId)
+      .from("users")
+      .select("password_hash")
+      .eq("id", userId)
       .single();
 
     if (fetchError || !user) {
-      return { success: false, error: 'Usuário não encontrado' };
+      return { success: false, error: "Usuário não encontrado" };
     }
 
     const currentHash = await hashPassword(currentPassword);
     if (user.password_hash !== currentHash) {
-      return { success: false, error: 'Senha atual incorreta' };
+      return { success: false, error: "Senha atual incorreta" };
     }
 
     // 2. Atualizar para nova senha
     const newHash = await hashPassword(newPassword);
     const { error: updateError } = await supabase
-      .from('users')
+      .from("users")
       .update({ password_hash: newHash })
-      .eq('id', userId);
+      .eq("id", userId);
 
     if (updateError) {
-      console.error('Erro ao atualizar senha:', updateError);
+      console.error("Erro ao atualizar senha:", updateError);
       return { success: false, error: updateError.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error('Erro ao alterar senha:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao alterar senha:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
 
@@ -414,34 +425,32 @@ export async function changePassword(
  */
 export async function generateSecurityCode(
   userId: string,
-  purpose: 'password_reset' | 'two_factor'
+  purpose: "password_reset" | "two_factor"
 ): Promise<{ success: boolean; code?: string; error?: string }> {
   try {
     // Gerar código de 6 dígitos
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     // Expirar em 15 minutos
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
-    const { error } = await supabase
-      .from('security_codes')
-      .insert({
-        user_id: userId,
-        code: code,
-        purpose: purpose,
-        expires_at: expiresAt.toISOString()
-      });
+    const { error } = await supabase.from("security_codes").insert({
+      user_id: userId,
+      code: code,
+      purpose: purpose,
+      expires_at: expiresAt.toISOString(),
+    });
 
     if (error) {
-      console.error('Erro ao gerar código:', error);
+      console.error("Erro ao gerar código:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, code };
   } catch (error) {
-    console.error('Erro ao gerar código:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao gerar código:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
 
@@ -455,32 +464,32 @@ export async function validateSecurityCode(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { data, error } = await supabase
-      .from('security_codes')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('code', code)
-      .eq('purpose', purpose)
-      .eq('used', false)
-      .gt('expires_at', new Date().toISOString())
+      .from("security_codes")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("code", code)
+      .eq("purpose", purpose)
+      .eq("used", false)
+      .gt("expires_at", new Date().toISOString())
       .single();
 
     if (error || !data) {
-      return { success: false, error: 'Código inválido ou expirado' };
+      return { success: false, error: "Código inválido ou expirado" };
     }
 
     // Marcar como usado
     await supabase
-      .from('security_codes')
-      .update({ 
-        used: true, 
-        used_at: new Date().toISOString() 
+      .from("security_codes")
+      .update({
+        used: true,
+        used_at: new Date().toISOString(),
       })
-      .eq('id', data.id);
+      .eq("id", data.id);
 
     return { success: true };
   } catch (error) {
-    console.error('Erro ao validar código:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao validar código:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
 
@@ -490,9 +499,9 @@ export async function validateSecurityCode(
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /**
@@ -501,21 +510,21 @@ async function hashPassword(password: string): Promise<string> {
 export async function getUserNotifications(userId: string) {
   try {
     const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .from("notifications")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
       .limit(50);
 
     if (error) {
-      console.error('Erro ao buscar notificações:', error);
+      console.error("Erro ao buscar notificações:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Erro ao buscar notificações:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao buscar notificações:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
 
@@ -525,21 +534,21 @@ export async function getUserNotifications(userId: string) {
 export async function markNotificationAsRead(notificationId: string) {
   try {
     const { error } = await supabase
-      .from('notifications')
-      .update({ 
-        read: true, 
-        read_at: new Date().toISOString() 
+      .from("notifications")
+      .update({
+        read: true,
+        read_at: new Date().toISOString(),
       })
-      .eq('id', notificationId);
+      .eq("id", notificationId);
 
     if (error) {
-      console.error('Erro ao marcar notificação:', error);
+      console.error("Erro ao marcar notificação:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error('Erro ao marcar notificação:', error);
-    return { success: false, error: 'Erro inesperado' };
+    console.error("Erro ao marcar notificação:", error);
+    return { success: false, error: "Erro inesperado" };
   }
 }
