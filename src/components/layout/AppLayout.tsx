@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
-import { isSessionValid, touchActivity } from "@/lib/secureAuth";
+import { isAuthenticated } from "@/lib/supabaseAuth";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -15,20 +15,15 @@ export function AppLayout({ children, title, subtitle }: AppLayoutProps) {
 
   useEffect(() => {
     // Verificar autenticação ao montar
-    if (!isSessionValid()) {
+    if (!isAuthenticated()) {
       navigate('/login', { replace: true });
       return;
     }
 
-    // Registrar atividade
-    touchActivity();
-
     // Verificar sessão periodicamente (a cada minuto)
     const interval = setInterval(() => {
-      if (!isSessionValid()) {
+      if (!isAuthenticated()) {
         navigate('/login', { replace: true });
-      } else {
-        touchActivity();
       }
     }, 60000); // 1 minuto
 
@@ -44,7 +39,7 @@ export function AppLayout({ children, title, subtitle }: AppLayoutProps) {
       </div>
 
       <AppSidebar />
-      <div className="flex-1 flex flex-col min-w-0 relative z-10 md:ml-64">
+      <div className="flex-1 flex flex-col min-w-0 relative z-10 ml-16 md:ml-64">
         <AppHeader title={title} subtitle={subtitle} />
         <main className="flex-1 overflow-auto bg-gradient-to-br from-transparent via-slate-800/10 to-slate-900/20">
           <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 lg:py-8">

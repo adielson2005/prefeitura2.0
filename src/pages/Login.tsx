@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Building2, Lock, User, Eye, EyeOff, ShieldCheck, AlertTriangle, RefreshCw } from "lucide-react";
-import { secureLogin, getRemainingAttempts, resetLockout } from "@/lib/secureAuth";
+import { Building2, Lock, User, Eye, EyeOff, ShieldCheck, AlertTriangle, RefreshCw, ArrowLeft } from "lucide-react";
+import { loginWithSupabase } from "@/lib/supabaseAuth";
+import { getDefaultRoute, UserRole } from "@/lib/roleGuard";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [remainingAttempts, setRemainingAttempts] = useState(5);
+  const [userType, setUserType] = useState<'encarregado' | 'funcionario' | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,28 +21,53 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const result = await secureLogin(username, password);
+      // Login com Supabase + Auditoria (passa o tipo selecionado)
+      const result = await loginWithSupabase(username, password, userType || undefined);
       
       if (result.success && result.user) {
-        // Login bem-sucedido
-        navigate("/");
+        // Login bem-sucedido - redirecionar baseado no role
+        console.log(`✅ Login realizado como ${userType}: ${result.user.username} (${result.user.role})`);
+        
+        const defaultRoute = getDefaultRoute(result.user.role as UserRole);
+        navigate(defaultRoute, { replace: true });
       } else {
         // Login falhado
-        setError(result.error || "Erro ao fazer login");
-        setRemainingAttempts(getRemainingAttempts());
+        setError(result.error || "Usuário ou senha incorretos");
+        
+        // Diminuir tentativas restantes
+        const remaining = Math.max(0, remainingAttempts - 1);
+        setRemainingAttempts(remaining);
+        
+        if (remaining === 0) {
+          setError("❌ Muitas tentativas falhadas. Aguarde alguns minutos.");
+        }
       }
     } catch (err) {
-      setError("Erro ao processar login. Tente novamente.");
+      console.error('Erro no login:', err);
+      setError("Erro ao conectar com o servidor. Verifique sua conexão.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleResetLockout = () => {
-    resetLockout();
     setError("");
     setRemainingAttempts(5);
-    alert("✅ Bloqueio removido! Você pode tentar fazer login novamente.");
+    setUsername("");
+    setPassword("");
+  };
+
+  const handleUserTypeSelect = (type: 'encarregado' | 'funcionario') => {
+    setUserType(type);
+    setError("");
+    // Preencher sugestão de usuário
+    if (type === 'encarregado') {
+      setUsername('teste');
+    } else {
+      // Deixar vazio para o funcionário digitar vigia, vigilante ou guarda
+      setUsername('');
+    }
+    setPassword('');
   };
 
   return (
@@ -56,7 +83,7 @@ export default function Login() {
         <div className="text-center mb-10 sm:mb-12">
           <div className="flex justify-center mb-6 sm:mb-8">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 border border-slate-600/60 flex items-center justify-center shadow-lg shadow-slate-900/50 hover:shadow-slate-900/70 hover:scale-125 transition-all">
-              <Building2 className="h-8 w-8 sm:h-10 sm:w-10 text-white font-bold" />
+              <Building2 className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
             </div>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">Sistema de Vigilância</h1>
@@ -68,12 +95,102 @@ export default function Login() {
           {/* Linha de brilho no topo */}
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
 
-          <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">Acesso Seguro</h2>
-          <p className="text-sm sm:text-base text-slate-400 mb-8 sm:mb-10">Sistema restrito a administradores</p>
+          {/* Botão de Voltar - Aparece apenas quando tipo é selecionado */}
+          {userType && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setUserType(null);
+                setUsername('');
+                setPassword('');
+                setError('');
+              }}
+              className="absolute top-4 left-4 h-9 text-slate-400 hover:text-white hover:bg-slate-700/40 rounded-lg transition-all border border-transparent hover:border-slate-600/40 gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-xs sm:text-sm">Voltar</span>
+            </Button>
+          )}
 
-          <form onSubmit={handleLogin} className="space-y-5 sm:space-y-6">
-            {/* Username Input */}
-            <div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white mb-2 mt-12">Acesso ao Sistema</h2>
+          <p className="text-sm sm:text-base text-slate-400 mb-6">Selecione seu tipo de acesso</p>
+
+          {/* Seleção de Tipo de Usuário */}
+          {!userType ? (
+            <div className="space-y-4 mb-8">
+              <button
+                type="button"
+                onClick={() => handleUserTypeSelect('encarregado')}
+                className="w-full p-6 rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-700/10 border-2 border-blue-500/30 hover:border-blue-500/60 transition-all group hover:scale-[1.02]"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ShieldCheck className="h-7 w-7 text-white" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <h3 className="text-xl font-bold text-white mb-1">Encarregado</h3>
+                    <p className="text-sm text-slate-300">Gerentes, supervisores e administradores</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleUserTypeSelect('funcionario')}
+                className="w-full p-6 rounded-xl bg-gradient-to-br from-green-600/20 to-green-700/10 border-2 border-green-500/30 hover:border-green-500/60 transition-all group hover:scale-[1.02]"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <User className="h-7 w-7 text-white" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <h3 className="text-xl font-bold text-white mb-1">Funcionário</h3>
+                    <p className="text-sm text-slate-300">Digite: vigia, vigilante ou guarda</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          ) : (
+            <div className="mb-6">
+              <div className={`p-4 rounded-lg border-2 ${
+                userType === 'encarregado' 
+                  ? 'bg-blue-600/10 border-blue-500/40' 
+                  : 'bg-green-600/10 border-green-500/40'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {userType === 'encarregado' ? (
+                      <ShieldCheck className="h-5 w-5 text-blue-400" />
+                    ) : (
+                      <User className="h-5 w-5 text-green-400" />
+                    )}
+                    <span className="text-white font-semibold">
+                      {userType === 'encarregado' ? 'Acesso Encarregado' : 'Acesso Funcionário'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUserType(null);
+                      setUsername('');
+                      setPassword('');
+                      setError('');
+                    }}
+                    className="text-xs text-slate-400 hover:text-white transition-colors"
+                  >
+                    Alterar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Formulário - só aparece se userType for selecionado */}
+          {userType && (
+            <form onSubmit={handleLogin} className="space-y-5 sm:space-y-6">
+              {/* Username Input */}
+              <div>
               <label className="block text-sm sm:text-base font-bold text-slate-200 mb-2.5">
                 Usuário
               </label>
@@ -146,6 +263,22 @@ export default function Login() {
               </div>
             )}
 
+            {/* Info Box - Credenciais de Teste */}
+            <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-700/30 text-xs text-blue-300">
+              <p className="font-bold mb-2">🧪 Credenciais de Teste:</p>
+              <div className="space-y-1 text-[11px]">
+                {userType === 'encarregado' ? (
+                  <p>👔 <strong>Encarregado:</strong> teste / 123 ou gerente / gerente@A2005!</p>
+                ) : (
+                  <>
+                    <p>👁️ <strong>Vigia:</strong> vigia / 123</p>
+                    <p>👷 <strong>Vigilante:</strong> vigilante / 123</p>
+                    <p>🛡️ <strong>Guarda:</strong> guarda / 123</p>
+                  </>
+                )}
+              </div>
+            </div>
+
             {/* Security Notice */}
             <div className="p-3.5 rounded-lg bg-gradient-to-r from-violet-950/40 to-purple-900/30 border border-violet-700/30">
               <div className="flex items-start gap-2.5">
@@ -180,6 +313,7 @@ export default function Login() {
               )}
             </Button>
           </form>
+          )}
 
           {/* Footer */}
           <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-700/50">

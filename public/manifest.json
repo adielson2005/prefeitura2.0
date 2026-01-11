@@ -1,0 +1,68 @@
+{
+  "name": "Portal do Funcionário - Prefeitura",
+  "short_name": "Portal Funcionário",
+  "description": "Sistema de registro de ponto e gestão de escalas para funcionários da Prefeitura Municipal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-72x72.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "business"],
+  "shortcuts": [
+    {
+      "name": "Registrar Ponto",
+      "short_name": "Ponto",
+      "description": "Registrar entrada/saída rapidamente",
+      "url": "/funcionario/ponto",
+      "icons": [
+        {
+          "src": "/icon-192x192.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Ver Escala",
+      "short_name": "Escala",
+      "description": "Consultar sua escala de trabalho",
+      "url": "/funcionario/escala",
+      "icons": [
+        {
+          "src": "/icon-192x192.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

@@ -15,36 +15,67 @@ import {
   LogOut,
   Building2,
   UserCog,
+  User,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/supabaseAuth";
 import { secureLogout } from "@/lib/secureAuth";
 
 const mainNavItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Vigias", url: "/vigias", icon: Eye },
-  { title: "Vigilantes", url: "/vigilantes", icon: Shield },
-  { title: "Guardas", url: "/guardas", icon: Users },
+  { title: "Dashboard", url: "/", icon: LayoutDashboard, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
+  { title: "Vigias", url: "/vigias", icon: Eye, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
+  { title: "Vigilantes", url: "/vigilantes", icon: Shield, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
+  { title: "Guardas", url: "/guardas", icon: Users, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
 ];
 
 const managementNavItems = [
-  { title: "Controle de Ponto", url: "/ponto", icon: Clock },
-  { title: "Folgas e Escalas", url: "/escalas", icon: Calendar },
-  { title: "Áreas", url: "/areas", icon: Building2 },
-  { title: "Supervisores", url: "/supervisores", icon: UserCog },
+  { title: "Controle de Ponto", url: "/ponto", icon: Clock, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
+  { title: "Folgas e Escalas", url: "/escalas", icon: Calendar, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
+  { title: "Áreas", url: "/areas", icon: Building2, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
+  { title: "Supervisores", url: "/supervisores", icon: UserCog, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
 ];
 
 const reportNavItems = [
-  { title: "Relatórios", url: "/relatorios", icon: FileText },
-  { title: "Configurações", url: "/configuracoes", icon: Settings },
+  { title: "Relatórios", url: "/relatorios", icon: FileText, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
+  { title: "Configurações", url: "/configuracoes", icon: Settings, roles: ["ADMINISTRADOR", "GERENTE", "COORDENADOR", "SUPERVISOR"] },
+];
+
+// Menu para funcionários (vigia, vigilante, guarda)
+const employeeNavItems = [
+  { title: "Dashboard", url: "/funcionario", icon: LayoutDashboard, roles: ["VIGIA", "VIGILANTE", "GUARDA"] },
+  { title: "Registrar Ponto", url: "/funcionario/ponto", icon: Clock, roles: ["VIGIA", "VIGILANTE", "GUARDA"] },
+  { title: "Minha Escala", url: "/funcionario/escala", icon: Calendar, roles: ["VIGIA", "VIGILANTE", "GUARDA"] },
+  { title: "Histórico", url: "/funcionario/historico", icon: History, roles: ["VIGIA", "VIGILANTE", "GUARDA"] },
+  { title: "Meu Perfil", url: "/funcionario/perfil", icon: User, roles: ["VIGIA", "VIGILANTE", "GUARDA"] },
+  { title: "Configurações", url: "/funcionario/configuracoes", icon: Settings, roles: ["VIGIA", "VIGILANTE", "GUARDA"] },
 ];
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const currentUser = getCurrentUser();
+  const userRole = currentUser?.role || "";
+
+  // Determinar se é funcionário (vigia, vigilante ou guarda)
+  const isEmployee = ["VIGIA", "VIGILANTE", "GUARDA"].includes(userRole);
+
+  // Filtrar itens do menu baseado no role
+  const filteredMainNavItems = isEmployee 
+    ? employeeNavItems.filter(item => item.roles.includes(userRole))
+    : mainNavItems.filter(item => item.roles.includes(userRole));
+  
+  const filteredManagementNavItems = isEmployee 
+    ? []
+    : managementNavItems.filter(item => item.roles.includes(userRole));
+  
+  const filteredReportNavItems = reportNavItems.filter(item => item.roles.includes(userRole));
 
   const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/";
+    if (path === "/" || path === "/funcionario") {
+      return location.pathname === path;
+    }
     return location.pathname.startsWith(path);
   };
 
@@ -77,8 +108,8 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col bg-gradient-to-b from-slate-900 via-slate-800/40 to-slate-950 border-r border-slate-700/40 transition-all duration-300 ease-in-out h-screen fixed left-0 top-0 backdrop-blur-sm shadow-xl",
-        collapsed ? "w-20" : "w-64"
+        "flex flex-col bg-gradient-to-b from-slate-900 via-slate-800/40 to-slate-950 border-r border-slate-700/40 transition-all duration-300 ease-in-out h-screen fixed left-0 top-0 backdrop-blur-sm shadow-xl z-30",
+        collapsed ? "w-16 md:w-20" : "w-60 md:w-64"
       )}
     >
       {/* Professional line accent */}
@@ -113,51 +144,59 @@ export function AppSidebar() {
         <div className="space-y-1">
           {!collapsed && (
             <p className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 opacity-80">
-              Principal
+              {isEmployee ? "Menu" : "Principal"}
             </p>
           )}
-          {mainNavItems.map((item) => (
+          {filteredMainNavItems.map((item) => (
             <NavItem key={item.url} item={item} />
           ))}
         </div>
 
-        {/* Divisor visual */}
-        <div className="relative py-2">
-          <div className="absolute inset-0 flex items-center px-3">
-            <div className="w-full border-t border-slate-700/60"></div>
-          </div>
-        </div>
+        {/* Management - apenas para encarregados */}
+        {!isEmployee && filteredManagementNavItems.length > 0 && (
+          <>
+            {/* Divisor visual */}
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center px-3">
+                <div className="w-full border-t border-slate-700/60"></div>
+              </div>
+            </div>
 
-        {/* Management */}
-        <div className="space-y-1">
-          {!collapsed && (
-            <p className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 opacity-80">
-              Gestão
-            </p>
-          )}
-          {managementNavItems.map((item) => (
-            <NavItem key={item.url} item={item} />
-          ))}
-        </div>
+            <div className="space-y-1">
+              {!collapsed && (
+                <p className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 opacity-80">
+                  Gestão
+                </p>
+              )}
+              {filteredManagementNavItems.map((item) => (
+                <NavItem key={item.url} item={item} />
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* Divisor visual */}
-        <div className="relative py-2">
-          <div className="absolute inset-0 flex items-center px-3">
-            <div className="w-full border-t border-slate-700/60"></div>
-          </div>
-        </div>
+        {/* Reports/Sistema - mostrar se houver itens filtrados */}
+        {filteredReportNavItems.length > 0 && (
+          <>
+            {/* Divisor visual */}
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center px-3">
+                <div className="w-full border-t border-slate-700/60"></div>
+              </div>
+            </div>
 
-        {/* Reports */}
-        <div className="space-y-1">
-          {!collapsed && (
-            <p className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 opacity-80">
-              Sistema
-            </p>
-          )}
-          {reportNavItems.map((item) => (
-            <NavItem key={item.url} item={item} />
-          ))}
-        </div>
+            <div className="space-y-1">
+              {!collapsed && (
+                <p className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 opacity-80">
+                  Sistema
+                </p>
+              )}
+              {filteredReportNavItems.map((item) => (
+                <NavItem key={item.url} item={item} />
+              ))}
+            </div>
+          </>
+        )}
       </nav>
 
       {/* Footer */}

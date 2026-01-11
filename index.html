@@ -2,10 +2,28 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Vigilância Municipal - Sistema de Gestão</title>
     <meta name="description" content="Sistema de gestão de vigilância municipal para controle de ponto, escalas, folgas e supervisão de vigias, vigilantes e guardas." />
     <meta name="author" content="Prefeitura Municipal" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Portal Funcionário" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/icon-192x192.svg" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Ícones para iOS -->
+    <link rel="apple-touch-icon" sizes="72x72" href="/icon-72x72.svg" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192x192.svg" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512x512.svg" />
 
     <meta property="og:title" content="Vigilância Municipal - Sistema de Gestão" />
     <meta property="og:description" content="Sistema de gestão de vigilância municipal para controle de ponto, escalas, folgas e supervisão." />
@@ -13,10 +31,36 @@
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Prefeitura" />
+    
+    <!-- Safe Area Insets for iOS -->
+    <style>
+      body {
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      }
+      .safe-area-inset-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    </style>
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((registration) => {
+              console.log('✅ Service Worker registrado com sucesso:', registration.scope);
+            })
+            .catch((error) => {
+              console.log('❌ Falha ao registrar Service Worker:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

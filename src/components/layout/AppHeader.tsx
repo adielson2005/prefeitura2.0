@@ -1,4 +1,4 @@
-import { Bell, Search, User, LogOut } from "lucide-react";
+import { Bell, Search, User, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -9,7 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser, secureLogout } from "@/lib/secureAuth";
+import { getCurrentUser } from "@/lib/supabaseAuth";
+import { secureLogout } from "@/lib/secureAuth";
 import { useState, useEffect } from "react";
 
 interface AppHeaderProps {
@@ -54,11 +55,24 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
 
       {/* Left section */}
-      <div className="flex-1 min-w-0">
-        <h1 className="font-display text-lg sm:text-xl font-black text-white">{title}</h1>
-        {subtitle && (
-          <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 hidden sm:block font-medium">{subtitle}</p>
-        )}
+      <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-3">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(-1)}
+          className="h-9 w-9 text-slate-400 hover:text-white hover:bg-slate-700/40 rounded-lg transition-all border border-transparent hover:border-slate-600/40 flex-shrink-0"
+          title="Voltar"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+
+        <div className="min-w-0">
+          <h1 className="font-display text-lg sm:text-xl font-black text-white">{title}</h1>
+          {subtitle && (
+            <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 hidden sm:block font-medium">{subtitle}</p>
+          )}
+        </div>
       </div>
 
       {/* Right section */}

@@ -1,0 +1,19 @@
+{
+  "recommendations": [
+    // Mobile Preview
+    "rvest.vs-code-prettier-eslint",
+    
+    // Desenvolvimento React
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    
+    // TypeScript
+    "yoavbls.pretty-ts-errors",
+    
+    // Ferramentas úteis
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-rename-tag",
+    "wix.vscode-import-cost"
+  ]
+}
