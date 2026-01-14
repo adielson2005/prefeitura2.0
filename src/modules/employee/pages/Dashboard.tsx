@@ -3,7 +3,7 @@
  * Visão geral rápida com informações essenciais
  */
 
-import { AppLayout } from "@/components/layout/AppLayout";
+import { EmployeeLayout } from "../layouts/EmployeeLayout";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { StatusCard } from "@/components/dashboard/StatusCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
@@ -30,10 +30,13 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState, useEffect } from "react";
 import { dataService } from "@/lib/dataService";
+import { apiService } from "@/lib/apiService";
+import { getCurrentUser } from "@/lib/secureAuth";
 
 export default function EmployeeDashboard() {
   const navigate = useNavigate();
   const now = new Date();
+  const currentUser = getCurrentUser();
 
   // Dados do sistema - mesma estrutura do encarregado
   const [stats, setStats] = useState(dataService.getStats());
@@ -46,6 +49,26 @@ export default function EmployeeDashboard() {
   const [onDutyProfessionals, setOnDutyProfessionals] = useState(
     dataService.getOnDutyProfessionals()
   );
+  const [todayStats, setTodayStats] = useState<any>(null);
+
+  // Carregar estatísticas do dia da API
+  useEffect(() => {
+    const loadTodayStats = async () => {
+      if (!currentUser) return;
+
+      try {
+        const result = await apiService.getTodayStats();
+        if (result.success) {
+          setTodayStats(result.data);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar estatísticas:", error);
+      }
+    };
+
+    loadTodayStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const unsubscribe = dataService.subscribe(() => {
@@ -95,7 +118,7 @@ export default function EmployeeDashboard() {
   };
 
   return (
-    <AppLayout title="Dashboard" subtitle="Visão geral do sistema">
+    <EmployeeLayout title="Dashboard">
       <div className="space-y-7 sm:space-y-8 md:space-y-10">
         {/* Métricas principais - igual encarregado */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
@@ -185,6 +208,6 @@ export default function EmployeeDashboard() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </EmployeeLayout>
   );
 }

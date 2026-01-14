@@ -1,29 +1,29 @@
 import { Module, Global } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createClient } from '@supabase/supabase-js';
+import { SupabaseService } from './supabase.service';
 
 @Global()
 @Module({
   imports: [ConfigModule],
   providers: [
+    SupabaseService,
     {
       provide: 'SUPABASE_CLIENT',
       useFactory: (configService: ConfigService) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         const supabaseUrl = configService.get<string>('SUPABASE_URL', '');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        const supabaseKey = configService.get<string>(
-          'SUPABASE_SERVICE_KEY',
-          '',
-        );
+
+        // Usar ANON_KEY para desenvolvimento (em produção use SERVICE_KEY)
+        const supabaseKey =
+          configService.get<string>('SUPABASE_SERVICE_KEY') ||
+          configService.get<string>('SUPABASE_ANON_KEY', '');
 
         if (!supabaseUrl || !supabaseKey) {
           throw new Error(
-            'Supabase URL e SERVICE_KEY devem estar configurados no .env',
+            'Supabase URL e chave devem estar configurados no .env',
           );
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return createClient(supabaseUrl, supabaseKey, {
           auth: {
             autoRefreshToken: false,
@@ -34,6 +34,6 @@ import { createClient } from '@supabase/supabase-js';
       inject: [ConfigService],
     },
   ],
-  exports: ['SUPABASE_CLIENT'],
+  exports: ['SUPABASE_CLIENT', SupabaseService],
 })
 export class SupabaseModule {}

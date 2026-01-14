@@ -2,15 +2,28 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { useEffect } from "react";
-import { isSessionValid, touchActivity, secureLogout, getCurrentUser } from "@/lib/secureAuth";
+import {
+  isSessionValid,
+  touchActivity,
+  secureLogout,
+  getCurrentUser,
+} from "@/lib/secureAuth";
 import { canAccessRoute, getDefaultRoute, UserRole } from "@/lib/roleGuard";
 import { MobileNavbar } from "@/components/layout/MobileNavbar";
 import { ThemeProvider } from "@/hooks/use-theme";
 
 // Páginas Admin (existentes)
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
 import Index from "./pages/Index";
 import Vigias from "./pages/Vigias";
 import Vigilantes from "./pages/Vigilantes";
@@ -34,6 +47,10 @@ import EmployeeEscala from "./modules/employee/pages/Escala";
 import EmployeeHistorico from "./modules/employee/pages/Historico";
 import EmployeePerfil from "./modules/employee/pages/Perfil";
 import EmployeeConfiguracoes from "@/modules/employee/pages/Configuracoes";
+import EmployeeNotificacoes from "@/modules/employee/pages/Notificacoes";
+
+// Páginas Admin (módulo)
+import Aprovacoes from "./modules/admin/pages/Aprovacoes";
 
 const queryClient = new QueryClient();
 
@@ -46,225 +63,364 @@ const App = () => (
         <BrowserRouter
           future={{
             v7_startTransition: true,
-            v7_relativeSplatPath: true
+            v7_relativeSplatPath: true,
           }}
         >
           {/* Observador de sessão e atividade do usuário */}
           <AuthWatcher />
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          {/* ==================== ROTAS ADMIN (GERENTE) ==================== */}
-          <Route 
-            path="/" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Index />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/vigias" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Vigias />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/vigilantes" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Vigilantes />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/guardas" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Guardas />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/ponto" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Ponto />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/escalas" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Escalas />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/areas" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Areas />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/supervisores" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Supervisores />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/relatorios" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Relatorios />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/configuracoes" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Configuracoes />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/perfil" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Perfil />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/notificacoes" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Notificacoes />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/seguranca" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Seguranca />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/buscar" 
-            element={
-              <RequireAuth allowedRoles={['ADMINISTRADOR', 'GERENTE', 'ADMIN', 'COORDENADOR', 'SUPERVISOR']}>
-                <AuthenticatedLayout>
-                  <Buscar />
-                </AuthenticatedLayout>
-              </RequireAuth>
-            } 
-          />
+            {/* ==================== ROTAS ADMIN (GERENTE) ==================== */}
+            <Route
+              path="/"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Index />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/vigias"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Vigias />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/vigilantes"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Vigilantes />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/guardas"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Guardas />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/ponto"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Ponto />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/aprovacoes"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Aprovacoes />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/escalas"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Escalas />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/areas"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Areas />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/supervisores"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Supervisores />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/relatorios"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Relatorios />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/configuracoes"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Configuracoes />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/perfil"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Perfil />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/notificacoes"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Notificacoes />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/seguranca"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Seguranca />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/buscar"
+              element={
+                <RequireAuth
+                  allowedRoles={[
+                    "ADMINISTRADOR",
+                    "GERENTE",
+                    "ADMIN",
+                    "COORDENADOR",
+                    "SUPERVISOR",
+                  ]}
+                >
+                  <AuthenticatedLayout>
+                    <Buscar />
+                  </AuthenticatedLayout>
+                </RequireAuth>
+              }
+            />
 
-          {/* ==================== ROTAS FUNCIONÁRIO ==================== */}
-          <Route 
-            path="/funcionario" 
-            element={
-              <RequireAuth allowedRoles={['VIGIA', 'VIGILANTE', 'GUARDA']}>
-                <EmployeeDashboard />
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/funcionario/ponto" 
-            element={
-              <RequireAuth allowedRoles={['VIGIA', 'VIGILANTE', 'GUARDA']}>
-                <EmployeePonto />
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/funcionario/escala" 
-            element={
-              <RequireAuth allowedRoles={['VIGIA', 'VIGILANTE', 'GUARDA']}>
-                <EmployeeEscala />
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/funcionario/historico" 
-            element={
-              <RequireAuth allowedRoles={['VIGIA', 'VIGILANTE', 'GUARDA']}>
-                <EmployeeHistorico />
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/funcionario/perfil" 
-            element={
-              <RequireAuth allowedRoles={['VIGIA', 'VIGILANTE', 'GUARDA']}>
-                <EmployeePerfil />
-              </RequireAuth>
-            } 
-          />
-          <Route 
-            path="/funcionario/configuracoes" 
-            element={
-              <RequireAuth allowedRoles={['VIGIA', 'VIGILANTE', 'GUARDA']}>
-                <EmployeeConfiguracoes />
-              </RequireAuth>
-            } 
-          />
+            {/* ==================== ROTAS FUNCIONÁRIO ==================== */}
+            <Route
+              path="/funcionario"
+              element={
+                <RequireAuth allowedRoles={["VIGIA", "VIGILANTE", "GUARDA"]}>
+                  <EmployeeDashboard />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/funcionario/ponto"
+              element={
+                <RequireAuth allowedRoles={["VIGIA", "VIGILANTE", "GUARDA"]}>
+                  <EmployeePonto />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/funcionario/escala"
+              element={
+                <RequireAuth allowedRoles={["VIGIA", "VIGILANTE", "GUARDA"]}>
+                  <EmployeeEscala />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/funcionario/historico"
+              element={
+                <RequireAuth allowedRoles={["VIGIA", "VIGILANTE", "GUARDA"]}>
+                  <EmployeeHistorico />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/funcionario/perfil"
+              element={
+                <RequireAuth allowedRoles={["VIGIA", "VIGILANTE", "GUARDA"]}>
+                  <EmployeePerfil />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/funcionario/configuracoes"
+              element={
+                <RequireAuth allowedRoles={["VIGIA", "VIGILANTE", "GUARDA"]}>
+                  <EmployeeConfiguracoes />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/funcionario/notificacoes"
+              element={
+                <RequireAuth allowedRoles={["VIGIA", "VIGILANTE", "GUARDA"]}>
+                  <EmployeeNotificacoes />
+                </RequireAuth>
+              }
+            />
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
 
 export default App;
 
-function RequireAuth({ 
-  children, 
-  allowedRoles 
-}: { 
+function RequireAuth({
+  children,
+  allowedRoles,
+}: {
   children: React.ReactElement;
   allowedRoles?: UserRole[];
 }) {
   const location = useLocation();
-  
+
   if (!isSessionValid()) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -274,11 +430,13 @@ function RequireAuth({
     const currentUser = getCurrentUser();
     if (!currentUser || !allowedRoles.includes(currentUser.role as UserRole)) {
       // Redirecionar para rota padrão do usuário
-      const defaultRoute = currentUser ? getDefaultRoute(currentUser.role as UserRole) : '/login';
+      const defaultRoute = currentUser
+        ? getDefaultRoute(currentUser.role as UserRole)
+        : "/login";
       return <Navigate to={defaultRoute} replace />;
     }
   }
-  
+
   return children;
 }
 
@@ -315,5 +473,3 @@ function AuthWatcher() {
 
   return null;
 }
-
-

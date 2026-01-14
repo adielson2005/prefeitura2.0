@@ -1,10 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class TimeRecordsService {
   constructor(
     @Inject('SUPABASE_CLIENT') private readonly supabase: SupabaseClient,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async registerPunch(
@@ -122,5 +124,73 @@ export class TimeRecordsService {
       total: count || 0,
       records: data || [],
     };
+  }
+
+  async approveRecord(recordId: string, approverId: string, notes?: string) {
+    const { data, error } = await this.supabase
+      .from('time_records')
+      .update({
+        status: 'APPROVED',
+        approved_by: approverId,
+        approved_at: new Date().toISOString(),
+        approval_notes: notes || null,
+      })
+      .eq('id', recordId)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Erro ao aprovar registro: ${error.message}`);
+    }
+
+    // Enviar notificação para o funcionário
+    try {
+      await this.notificationsService.createNotification({
+        title: 'Ponto Aprovado',
+        message: notes
+          ? `Seu registro de ponto foi aprovado. Observação: ${notes}`
+          : 'Seu registro de ponto foi aprovado.',
+        type: 'SUCCESS',
+        userId: data.user_id,
+        actionUrl: '/historico',
+      });
+    } catch (notifError) {
+      console.error('Erro ao enviar notificação:', notifError);
+    }
+
+    return data;
+  }
+
+  async rejectRecord(recordId: string, approverId: string, reason: string) {
+    const { data, error } = await this.supabase
+      .from('time_records')
+      .update({
+        status: 'REJECTED',
+        approved_by: approverId,
+        approved_at: new Date().toISOString(),
+        approval_notes: reason,
+      })
+      .eq('id', recordId)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Erro ao rejeitar registro: ${error.message}`);
+    }
+
+    // Enviar notificação para o funcionário
+    try {
+      await this.notificationsService.createNotification({
+        title: 'Ponto Rejeitado',
+        message: `Seu registro de ponto foi rejeitado. Motivo: ${reason}`,
+        type: 'WARNING',
+        userId: data.user_id,
+        actionUrl: '/historico',
+      });
+    } catch (notifError) {
+      console.error('Erro ao enviar notificação:', notifError);
+    }
+
+    return data;
   }
 }

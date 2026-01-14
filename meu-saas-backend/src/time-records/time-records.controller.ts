@@ -54,4 +54,26 @@ export class TimeRecordsController {
   getTodayStats(@Query('userId') userId?: string) {
     return this.timeRecordsService.getTodayStats(userId);
   }
+
+  @Post('approve')
+  approveRecord(
+    @Body() dto: { recordId: string; approverId: string; notes?: string },
+  ) {
+    return this.timeRecordsService.approveRecord(
+      dto.recordId,
+      dto.approverId,
+      dto.notes,
+    );
+  }
+
+  @Post('reject')
+  rejectRecord(
+    @Body() dto: { recordId: string; approverId: string; reason: string },
+  ) {
+    return this.timeRecordsService.rejectRecord(
+      dto.recordId,
+      dto.approverId,
+      dto.reason,
+    );
+  }
 }

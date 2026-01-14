@@ -120,4 +120,135 @@ export class AuthService {
 
     return user;
   }
+
+  async requestPasswordReset(email: string) {
+    try {
+      // Verificar se usuário existe
+      const { data: users, error } = await this.supabase
+        .from('users')
+        .select('id, email, full_name')
+        .eq('email', email)
+        .limit(1);
+
+      if (error || !users || users.length === 0) {
+        // Por segurança, retornar sucesso mesmo se email não existir
+        return {
+          success: true,
+          message: 'Se o email existir, um código foi enviado.',
+        };
+      }
+
+      const user = users[0];
+
+      // Gerar código de 6 dígitos
+      const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + 30); // Válido por 30 minutos
+
+      // Salvar código no banco
+      await this.supabase.from('password_reset_tokens').insert({
+        user_id: user.id,
+        email: user.email,
+        reset_code: resetCode,
+        expires_at: expiresAt.toISOString(),
+        used: false,
+      });
+
+      // TODO: Enviar email com o código
+      // Por enquanto, apenas log no console para desenvolvimento
+      console.log('\n📧 CÓDIGO DE RECUPERAÇÃO DE SENHA');
+      console.log('Email:', user.email);
+      console.log('Código:', resetCode);
+      console.log('Válido até:', expiresAt.toLocaleString('pt-BR'));
+      console.log('\n');
+
+      return {
+        success: true,
+        message: 'Código de recuperação enviado para o email.',
+        // Em desenvolvimento, retornar o código
+        devCode: process.env.NODE_ENV === 'development' ? resetCode : undefined,
+      };
+    } catch (error) {
+      console.error('Erro ao solicitar recuperação de senha:', error);
+      throw new Error('Erro ao processar solicitação');
+    }
+  }
+
+  async verifyResetCode(email: string, code: string) {
+    try {
+      const { data: tokens, error } = await this.supabase
+        .from('password_reset_tokens')
+        .select('*')
+        .eq('email', email)
+        .eq('reset_code', code)
+        .eq('used', false)
+        .gte('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error || !tokens || tokens.length === 0) {
+        throw new UnauthorizedException('Código inválido ou expirado');
+      }
+
+      return {
+        success: true,
+        message: 'Código válido',
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      console.error('Erro ao verificar código:', error);
+      throw new UnauthorizedException('Erro ao verificar código');
+    }
+  }
+
+  async resetPassword(email: string, code: string, newPassword: string) {
+    try {
+      // Verificar código novamente
+      const { data: tokens, error: tokenError } = await this.supabase
+        .from('password_reset_tokens')
+        .select('*')
+        .eq('email', email)
+        .eq('reset_code', code)
+        .eq('used', false)
+        .gte('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (tokenError || !tokens || tokens.length === 0) {
+        throw new UnauthorizedException('Código inválido ou expirado');
+      }
+
+      const token = tokens[0];
+
+      // Atualizar senha do usuário
+      const newPasswordHash = this.hashPassword(newPassword);
+      const { error: updateError } = await this.supabase
+        .from('users')
+        .update({ password_hash: newPasswordHash })
+        .eq('id', token.user_id);
+
+      if (updateError) {
+        throw new Error('Erro ao atualizar senha');
+      }
+
+      // Marcar token como usado
+      await this.supabase
+        .from('password_reset_tokens')
+        .update({ used: true })
+        .eq('id', token.id);
+
+      return {
+        success: true,
+        message: 'Senha redefinida com sucesso',
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      console.error('Erro ao redefinir senha:', error);
+      throw new Error('Erro ao redefinir senha');
+    }
+  }
 }

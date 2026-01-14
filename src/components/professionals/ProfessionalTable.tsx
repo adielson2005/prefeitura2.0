@@ -25,6 +25,9 @@ interface Professional {
 interface ProfessionalTableProps {
   professionals: Professional[];
   className?: string;
+  onView?: (professional: Professional) => void;
+  onEdit?: (professional: Professional) => void;
+  onDelete?: (professional: Professional) => void;
 }
 
 const statusConfig = {
@@ -40,24 +43,52 @@ const categoryConfig = {
   GUARDA: { color: "bg-gradient-to-br from-amber-500 to-amber-600" },
 };
 
-export function ProfessionalTable({ professionals, className }: ProfessionalTableProps) {
+export function ProfessionalTable({
+  professionals,
+  className,
+  onView,
+  onEdit,
+  onDelete,
+}: ProfessionalTableProps) {
   return (
-    <div className={cn("bg-white rounded-lg border border-border/40 overflow-hidden", className)}>
+    <div
+      className={cn(
+        "bg-white rounded-lg border border-border/40 overflow-hidden",
+        className
+      )}
+    >
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50/50 hover:bg-gray-50/50 border-b border-border/50">
-            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">Profissional</TableHead>
-            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">Área</TableHead>
-            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">Escala</TableHead>
-            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">Supervisor</TableHead>
-            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">Status</TableHead>
-            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider text-right">Ações</TableHead>
+            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">
+              Profissional
+            </TableHead>
+            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">
+              Área
+            </TableHead>
+            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">
+              Escala
+            </TableHead>
+            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">
+              Supervisor
+            </TableHead>
+            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider">
+              Status
+            </TableHead>
+            <TableHead className="font-semibold text-foreground text-xs uppercase tracking-wider text-right">
+              Ações
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {professionals.map((professional) => {
-            const initials = professional.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
-            
+            const initials = professional.name
+              .split(" ")
+              .map((n) => n[0])
+              .slice(0, 2)
+              .join("")
+              .toUpperCase();
+
             return (
               <TableRow
                 key={professional.id}
@@ -66,62 +97,72 @@ export function ProfessionalTable({ professionals, className }: ProfessionalTabl
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">
-                      <AvatarFallback className={cn(
-                        "text-xs font-semibold text-white",
-                        categoryConfig[professional.category].color
-                      )}>
+                      <AvatarFallback
+                        className={cn(
+                          "text-xs font-semibold text-white",
+                          categoryConfig[professional.category].color
+                        )}
+                      >
                         {initials}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-foreground text-sm">{professional.name}</p>
+                      <p className="font-medium text-foreground text-sm">
+                        {professional.name}
+                      </p>
                       <span className="text-[11px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded inline-block mt-1">
                         {professional.category}
                       </span>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">{professional.area}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {professional.area}
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
                     <Clock className="h-3.5 w-3.5" />
                     {professional.schedule}
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">{professional.supervisor}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {professional.supervisor}
+                </TableCell>
                 <TableCell>
-                  <div className={cn(
-                    "px-2.5 py-1 rounded-md text-xs font-semibold text-white w-fit",
-                    statusConfig[professional.status].color
-                  )}>
+                  <div
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-xs font-semibold text-white w-fit",
+                      statusConfig[professional.status].color
+                    )}
+                  >
                     {statusConfig[professional.status].label}
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="h-8 w-8 p-0 hover:bg-secondary"
-                      onClick={() => handleView(professional)}
+                      onClick={() => onView?.(professional)}
                       title="Visualizar"
                     >
                       <Eye className="h-4 w-4 text-muted-foreground" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="h-8 w-8 p-0 hover:bg-secondary"
-                      onClick={() => handleEdit(professional)}
+                      onClick={() => onEdit?.(professional)}
                       title="Editar"
                     >
                       <Edit2 className="h-4 w-4 text-muted-foreground" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="h-8 w-8 p-0 hover:bg-secondary"
-                      onClick={() => handleDelete(professional)}
+                      onClick={() => onDelete?.(professional)}
                       title="Mais opções"
                     >
                       <MoreHorizontal className="h-4 w-4 text-muted-foreground" />

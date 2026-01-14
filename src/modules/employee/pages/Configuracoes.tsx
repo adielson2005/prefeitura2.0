@@ -4,17 +4,23 @@
  */
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { EmployeeLayout } from "../layouts/EmployeeLayout";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "@/hooks/use-theme";
-import { 
-  Bell, 
-  Lock, 
-  Eye, 
+import {
+  Bell,
+  Lock,
+  Eye,
   EyeOff,
   Save,
   Moon,
@@ -30,7 +36,7 @@ import {
   Send,
   UserCheck,
   Check,
-  X
+  X,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrentUser } from "@/lib/secureAuth";
@@ -39,32 +45,38 @@ export default function EmployeeConfiguracoes() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const usuario = getCurrentUser();
-  
+
   // Estados de Notificações
   const [notifPontoEmail, setNotifPontoEmail] = useState(true);
   const [notifPontoApp, setNotifPontoApp] = useState(true);
   const [notifEscalaEmail, setNotifEscalaEmail] = useState(true);
   const [notifEscalaApp, setNotifEscalaApp] = useState(true);
   const [notifSom, setNotifSom] = useState(true);
-  
+
   // Estados de Segurança - Troca de Senha
-  const [senhaAtual, setSenhaAtual] = useState('');
-  const [novaSenha, setNovaSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
   const [mostrarSenhas, setMostrarSenhas] = useState(false);
-  
+
   // Estados de Contatos de Segurança
-  const [emailInstitucional, setEmailInstitucional] = useState(usuario?.username + "@prefeitura.gov.br");
+  const [emailInstitucional, setEmailInstitucional] = useState(
+    usuario?.username + "@prefeitura.gov.br"
+  );
   const [emailPessoal, setEmailPessoal] = useState("");
   const [telefoneCelular, setTelefoneCelular] = useState("");
-  
+
   // Estados de Verificação
-  const [etapaVerificacao, setEtapaVerificacao] = useState<"formulario" | "escolha-canal" | "codigo" | "sucesso">("formulario");
-  const [canalEscolhido, setCanalEscolhido] = useState<"email-institucional" | "email-pessoal" | "telefone" | "supervisor" | null>(null);
+  const [etapaVerificacao, setEtapaVerificacao] = useState<
+    "formulario" | "escolha-canal" | "codigo" | "sucesso"
+  >("formulario");
+  const [canalEscolhido, setCanalEscolhido] = useState<
+    "email-institucional" | "email-pessoal" | "telefone" | "supervisor" | null
+  >(null);
   const [codigoVerificacao, setCodigoVerificacao] = useState("");
   const [codigoEnviado, setCodigoEnviado] = useState("");
   const [tentativasRestantes, setTentativasRestantes] = useState(3);
-  
+
   // Autenticação 2FA
   const [autenticacao2FA, setAutenticacao2FA] = useState(false);
 
@@ -75,9 +87,9 @@ export default function EmployeeConfiguracoes() {
       maiuscula: /[A-Z]/.test(senha),
       minuscula: /[a-z]/.test(senha),
       numero: /[0-9]/.test(senha),
-      especial: /[!@#$%^&*(),.?":{}|<>]/.test(senha)
+      especial: /[!@#$%^&*(),.?":{}|<>]/.test(senha),
     };
-    
+
     const pontos = Object.values(requisitos).filter(Boolean).length;
     return { requisitos, pontos, forte: pontos >= 4 };
   };
@@ -86,14 +98,17 @@ export default function EmployeeConfiguracoes() {
 
   // Handler para salvar notificações
   const handleSalvarNotificacoes = () => {
-    localStorage.setItem('employee_notif_prefs', JSON.stringify({
-      pontoEmail: notifPontoEmail,
-      pontoApp: notifPontoApp,
-      escalaEmail: notifEscalaEmail,
-      escalaApp: notifEscalaApp,
-      som: notifSom
-    }));
-    
+    localStorage.setItem(
+      "employee_notif_prefs",
+      JSON.stringify({
+        pontoEmail: notifPontoEmail,
+        pontoApp: notifPontoApp,
+        escalaEmail: notifEscalaEmail,
+        escalaApp: notifEscalaApp,
+        som: notifSom,
+      })
+    );
+
     toast({
       title: "✅ Preferências salvas!",
       description: "Suas configurações de notificação foram atualizadas.",
@@ -102,12 +117,14 @@ export default function EmployeeConfiguracoes() {
 
   // Handler para alternar tema
   const handleAlternarTema = () => {
-    const novoTema = theme === 'dark' ? 'light' : 'dark';
+    const novoTema = theme === "dark" ? "light" : "dark";
     setTheme(novoTema);
-    
+
     toast({
       title: "🎨 Tema alterado!",
-      description: `Tema ${novoTema === 'dark' ? 'escuro' : 'claro'} aplicado com sucesso.`,
+      description: `Tema ${
+        novoTema === "dark" ? "escuro" : "claro"
+      } aplicado com sucesso.`,
     });
   };
 
@@ -118,7 +135,7 @@ export default function EmployeeConfiguracoes() {
       toast({
         title: "⚠️ Campos obrigatórios",
         description: "Preencha todos os campos de senha.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -127,7 +144,7 @@ export default function EmployeeConfiguracoes() {
       toast({
         title: "❌ Senhas não conferem",
         description: "A nova senha e a confirmação devem ser iguais.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -135,18 +152,20 @@ export default function EmployeeConfiguracoes() {
     if (!forcaSenha.forte) {
       toast({
         title: "⚠️ Senha fraca",
-        description: "Sua senha deve atender a pelo menos 4 dos requisitos de segurança.",
-        variant: "destructive"
+        description:
+          "Sua senha deve atender a pelo menos 4 dos requisitos de segurança.",
+        variant: "destructive",
       });
       return;
     }
 
     // Validar senha atual (simulação)
-    if (senhaAtual !== "123") { // Em produção, validar com backend
+    if (senhaAtual !== "123") {
+      // Em produção, validar com backend
       toast({
         title: "❌ Senha incorreta",
         description: "A senha atual está incorreta.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -160,14 +179,14 @@ export default function EmployeeConfiguracoes() {
     if (!canal) return;
 
     setCanalEscolhido(canal);
-    
+
     // Gerar código aleatório de 6 dígitos
     const codigo = Math.floor(100000 + Math.random() * 900000).toString();
     setCodigoEnviado(codigo);
     setTentativasRestantes(3);
 
     let destino = "";
-    switch(canal) {
+    switch (canal) {
       case "email-institucional":
         destino = emailInstitucional;
         break;
@@ -197,14 +216,15 @@ export default function EmployeeConfiguracoes() {
       // Código correto - alterar senha (em produção, chamar API)
       toast({
         title: "✅ Senha alterada com sucesso!",
-        description: "Sua senha foi atualizada. Use a nova senha no próximo login.",
+        description:
+          "Sua senha foi atualizada. Use a nova senha no próximo login.",
       });
 
       // Limpar formulário
-      setSenhaAtual('');
-      setNovaSenha('');
-      setConfirmarSenha('');
-      setCodigoVerificacao('');
+      setSenhaAtual("");
+      setNovaSenha("");
+      setConfirmarSenha("");
+      setCodigoVerificacao("");
       setEtapaVerificacao("sucesso");
 
       // Voltar ao formulário após 3 segundos
@@ -218,19 +238,20 @@ export default function EmployeeConfiguracoes() {
       if (novasTentativas === 0) {
         toast({
           title: "🔒 Bloqueado",
-          description: "Muitas tentativas incorretas. Tente novamente em 15 minutos.",
-          variant: "destructive"
+          description:
+            "Muitas tentativas incorretas. Tente novamente em 15 minutos.",
+          variant: "destructive",
         });
         setEtapaVerificacao("formulario");
-        setSenhaAtual('');
-        setNovaSenha('');
-        setConfirmarSenha('');
-        setCodigoVerificacao('');
+        setSenhaAtual("");
+        setNovaSenha("");
+        setConfirmarSenha("");
+        setCodigoVerificacao("");
       } else {
         toast({
           title: "❌ Código incorreto",
           description: `Você tem ${novasTentativas} tentativa(s) restante(s).`,
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     }
@@ -239,15 +260,15 @@ export default function EmployeeConfiguracoes() {
   // Handler para cancelar alteração
   const handleCancelarAlteracao = () => {
     setEtapaVerificacao("formulario");
-    setSenhaAtual('');
-    setNovaSenha('');
-    setConfirmarSenha('');
-    setCodigoVerificacao('');
+    setSenhaAtual("");
+    setNovaSenha("");
+    setConfirmarSenha("");
+    setCodigoVerificacao("");
   };
 
   return (
-    <AppLayout title="Configurações" subtitle="Ajuste suas preferências e segurança">
-      <div className="space-y-6">
+    <EmployeeLayout title="Configurações">
+      <div className="space-y-6 p-4">
         {/* Notificações */}
         <Card className="bg-gradient-to-br from-slate-800/90 via-slate-900/80 to-slate-950/90 backdrop-blur-md border border-violet-500/50">
           <CardHeader>
@@ -262,12 +283,16 @@ export default function EmployeeConfiguracoes() {
           <CardContent className="space-y-6">
             {/* Notificações de Ponto */}
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-white">Registro de Ponto</h4>
-              
+              <h4 className="text-sm font-semibold text-white">
+                Registro de Ponto
+              </h4>
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Mail className="h-4 w-4 text-slate-400" />
-                  <Label htmlFor="ponto-email" className="text-slate-300">Notificações por e-mail</Label>
+                  <Label htmlFor="ponto-email" className="text-slate-300">
+                    Notificações por e-mail
+                  </Label>
                 </div>
                 <Switch
                   id="ponto-email"
@@ -279,7 +304,9 @@ export default function EmployeeConfiguracoes() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Smartphone className="h-4 w-4 text-slate-400" />
-                  <Label htmlFor="ponto-app" className="text-slate-300">Notificações no app</Label>
+                  <Label htmlFor="ponto-app" className="text-slate-300">
+                    Notificações no app
+                  </Label>
                 </div>
                 <Switch
                   id="ponto-app"
@@ -293,12 +320,16 @@ export default function EmployeeConfiguracoes() {
 
             {/* Notificações de Escala */}
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-white">Escalas e Turnos</h4>
-              
+              <h4 className="text-sm font-semibold text-white">
+                Escalas e Turnos
+              </h4>
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Mail className="h-4 w-4 text-slate-400" />
-                  <Label htmlFor="escala-email" className="text-slate-300">Notificações por e-mail</Label>
+                  <Label htmlFor="escala-email" className="text-slate-300">
+                    Notificações por e-mail
+                  </Label>
                 </div>
                 <Switch
                   id="escala-email"
@@ -310,7 +341,9 @@ export default function EmployeeConfiguracoes() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Smartphone className="h-4 w-4 text-slate-400" />
-                  <Label htmlFor="escala-app" className="text-slate-300">Notificações no app</Label>
+                  <Label htmlFor="escala-app" className="text-slate-300">
+                    Notificações no app
+                  </Label>
                 </div>
                 <Switch
                   id="escala-app"
@@ -330,7 +363,9 @@ export default function EmployeeConfiguracoes() {
                 ) : (
                   <VolumeX className="h-4 w-4 text-slate-400" />
                 )}
-                <Label htmlFor="som" className="text-slate-300">Sons de notificação</Label>
+                <Label htmlFor="som" className="text-slate-300">
+                  Sons de notificação
+                </Label>
               </div>
               <Switch
                 id="som"
@@ -339,7 +374,7 @@ export default function EmployeeConfiguracoes() {
               />
             </div>
 
-            <Button 
+            <Button
               onClick={handleSalvarNotificacoes}
               className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
             >
@@ -353,7 +388,7 @@ export default function EmployeeConfiguracoes() {
         <Card className="bg-gradient-to-br from-slate-800/90 via-slate-900/80 to-slate-950/90 backdrop-blur-md border border-blue-500/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              {theme === 'dark' ? (
+              {theme === "dark" ? (
                 <Moon className="h-5 w-5 text-blue-400" />
               ) : (
                 <Sun className="h-5 w-5 text-blue-400" />
@@ -369,7 +404,7 @@ export default function EmployeeConfiguracoes() {
               <div>
                 <Label className="text-white font-semibold">Tema</Label>
                 <p className="text-sm text-slate-400">
-                  {theme === 'dark' ? 'Modo Escuro' : 'Modo Claro'}
+                  {theme === "dark" ? "Modo Escuro" : "Modo Claro"}
                 </p>
               </div>
               <Button
@@ -377,7 +412,7 @@ export default function EmployeeConfiguracoes() {
                 variant="outline"
                 className="border-blue-500/50 text-white hover:bg-blue-600/20"
               >
-                {theme === 'dark' ? (
+                {theme === "dark" ? (
                   <>
                     <Sun className="h-4 w-4 mr-2" />
                     Claro
@@ -406,7 +441,10 @@ export default function EmployeeConfiguracoes() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email-inst" className="text-slate-300 flex items-center gap-2">
+              <Label
+                htmlFor="email-inst"
+                className="text-slate-300 flex items-center gap-2"
+              >
                 <Mail className="h-4 w-4 text-amber-400" />
                 E-mail Institucional (Principal)
               </Label>
@@ -424,7 +462,10 @@ export default function EmployeeConfiguracoes() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email-pessoal" className="text-slate-300 flex items-center gap-2">
+              <Label
+                htmlFor="email-pessoal"
+                className="text-slate-300 flex items-center gap-2"
+              >
                 <Mail className="h-4 w-4 text-slate-400" />
                 E-mail Pessoal (Backup)
               </Label>
@@ -442,7 +483,10 @@ export default function EmployeeConfiguracoes() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefone" className="text-slate-300 flex items-center gap-2">
+              <Label
+                htmlFor="telefone"
+                className="text-slate-300 flex items-center gap-2"
+              >
                 <Smartphone className="h-4 w-4 text-slate-400" />
                 Telefone Celular (Backup)
               </Label>
@@ -459,11 +503,14 @@ export default function EmployeeConfiguracoes() {
               </p>
             </div>
 
-            <Button 
-              onClick={() => toast({
-                title: "✅ Contatos salvos!",
-                description: "Suas informações de segurança foram atualizadas.",
-              })}
+            <Button
+              onClick={() =>
+                toast({
+                  title: "✅ Contatos salvos!",
+                  description:
+                    "Suas informações de segurança foram atualizadas.",
+                })
+              }
               className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -491,9 +538,11 @@ export default function EmployeeConfiguracoes() {
                   <Key className="h-4 w-4 text-red-400" />
                   Alterar Senha
                 </h4>
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="senha-atual" className="text-slate-300">Senha Atual</Label>
+                  <Label htmlFor="senha-atual" className="text-slate-300">
+                    Senha Atual
+                  </Label>
                   <div className="relative">
                     <Input
                       id="senha-atual"
@@ -518,7 +567,9 @@ export default function EmployeeConfiguracoes() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="nova-senha" className="text-slate-300">Nova Senha</Label>
+                  <Label htmlFor="nova-senha" className="text-slate-300">
+                    Nova Senha
+                  </Label>
                   <Input
                     id="nova-senha"
                     type={mostrarSenhas ? "text" : "password"}
@@ -527,41 +578,99 @@ export default function EmployeeConfiguracoes() {
                     className="bg-slate-900/50 border-slate-700/50 text-white"
                     placeholder="Digite a nova senha"
                   />
-                  
+
                   {/* Indicador de Força */}
                   {novaSenha && (
                     <div className="space-y-2 p-3 bg-slate-900/50 rounded-lg border border-slate-700/50">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-slate-400">Força da senha:</span>
-                        <span className={`text-xs font-semibold ${
-                          forcaSenha.pontos >= 4 ? 'text-green-400' :
-                          forcaSenha.pontos >= 3 ? 'text-yellow-400' :
-                          'text-red-400'
-                        }`}>
-                          {forcaSenha.pontos >= 4 ? 'Forte' :
-                           forcaSenha.pontos >= 3 ? 'Média' :
-                           'Fraca'}
+                        <span className="text-xs text-slate-400">
+                          Força da senha:
+                        </span>
+                        <span
+                          className={`text-xs font-semibold ${
+                            forcaSenha.pontos >= 4
+                              ? "text-green-400"
+                              : forcaSenha.pontos >= 3
+                              ? "text-yellow-400"
+                              : "text-red-400"
+                          }`}
+                        >
+                          {forcaSenha.pontos >= 4
+                            ? "Forte"
+                            : forcaSenha.pontos >= 3
+                            ? "Média"
+                            : "Fraca"}
                         </span>
                       </div>
                       <div className="grid grid-cols-1 gap-1 text-xs">
-                        <div className={`flex items-center gap-2 ${forcaSenha.requisitos.tamanho ? 'text-green-400' : 'text-slate-500'}`}>
-                          {forcaSenha.requisitos.tamanho ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        <div
+                          className={`flex items-center gap-2 ${
+                            forcaSenha.requisitos.tamanho
+                              ? "text-green-400"
+                              : "text-slate-500"
+                          }`}
+                        >
+                          {forcaSenha.requisitos.tamanho ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
                           Mínimo 8 caracteres
                         </div>
-                        <div className={`flex items-center gap-2 ${forcaSenha.requisitos.maiuscula ? 'text-green-400' : 'text-slate-500'}`}>
-                          {forcaSenha.requisitos.maiuscula ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        <div
+                          className={`flex items-center gap-2 ${
+                            forcaSenha.requisitos.maiuscula
+                              ? "text-green-400"
+                              : "text-slate-500"
+                          }`}
+                        >
+                          {forcaSenha.requisitos.maiuscula ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
                           Letra maiúscula
                         </div>
-                        <div className={`flex items-center gap-2 ${forcaSenha.requisitos.minuscula ? 'text-green-400' : 'text-slate-500'}`}>
-                          {forcaSenha.requisitos.minuscula ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        <div
+                          className={`flex items-center gap-2 ${
+                            forcaSenha.requisitos.minuscula
+                              ? "text-green-400"
+                              : "text-slate-500"
+                          }`}
+                        >
+                          {forcaSenha.requisitos.minuscula ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
                           Letra minúscula
                         </div>
-                        <div className={`flex items-center gap-2 ${forcaSenha.requisitos.numero ? 'text-green-400' : 'text-slate-500'}`}>
-                          {forcaSenha.requisitos.numero ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        <div
+                          className={`flex items-center gap-2 ${
+                            forcaSenha.requisitos.numero
+                              ? "text-green-400"
+                              : "text-slate-500"
+                          }`}
+                        >
+                          {forcaSenha.requisitos.numero ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
                           Número
                         </div>
-                        <div className={`flex items-center gap-2 ${forcaSenha.requisitos.especial ? 'text-green-400' : 'text-slate-500'}`}>
-                          {forcaSenha.requisitos.especial ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        <div
+                          className={`flex items-center gap-2 ${
+                            forcaSenha.requisitos.especial
+                              ? "text-green-400"
+                              : "text-slate-500"
+                          }`}
+                        >
+                          {forcaSenha.requisitos.especial ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
                           Caractere especial (!@#$...)
                         </div>
                       </div>
@@ -570,7 +679,9 @@ export default function EmployeeConfiguracoes() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmar-senha" className="text-slate-300">Confirmar Nova Senha</Label>
+                  <Label htmlFor="confirmar-senha" className="text-slate-300">
+                    Confirmar Nova Senha
+                  </Label>
                   <Input
                     id="confirmar-senha"
                     type={mostrarSenhas ? "text" : "password"}
@@ -593,7 +704,7 @@ export default function EmployeeConfiguracoes() {
                   )}
                 </div>
 
-                <Button 
+                <Button
                   onClick={handleIniciarAlteracaoSenha}
                   className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700"
                 >
@@ -609,8 +720,12 @@ export default function EmployeeConfiguracoes() {
                 <div className="flex items-center gap-2 mb-4">
                   <Shield className="h-5 w-5 text-amber-400" />
                   <div>
-                    <h4 className="text-sm font-semibold text-white">Verificação de Segurança</h4>
-                    <p className="text-xs text-slate-400">Escolha como deseja receber o código de verificação</p>
+                    <h4 className="text-sm font-semibold text-white">
+                      Verificação de Segurança
+                    </h4>
+                    <p className="text-xs text-slate-400">
+                      Escolha como deseja receber o código de verificação
+                    </p>
                   </div>
                 </div>
 
@@ -623,8 +738,12 @@ export default function EmployeeConfiguracoes() {
                   >
                     <Mail className="h-4 w-4 mr-3 text-green-400" />
                     <div className="text-left">
-                      <div className="text-white font-semibold">E-mail Institucional</div>
-                      <div className="text-xs text-slate-400 truncate">{emailInstitucional}</div>
+                      <div className="text-white font-semibold">
+                        E-mail Institucional
+                      </div>
+                      <div className="text-xs text-slate-400 truncate">
+                        {emailInstitucional}
+                      </div>
                     </div>
                   </Button>
 
@@ -636,7 +755,9 @@ export default function EmployeeConfiguracoes() {
                   >
                     <Mail className="h-4 w-4 mr-3 text-blue-400" />
                     <div className="text-left">
-                      <div className="text-white font-semibold">E-mail Pessoal</div>
+                      <div className="text-white font-semibold">
+                        E-mail Pessoal
+                      </div>
                       <div className="text-xs text-slate-400">
                         {emailPessoal || "Não cadastrado"}
                       </div>
@@ -651,7 +772,9 @@ export default function EmployeeConfiguracoes() {
                   >
                     <Smartphone className="h-4 w-4 mr-3 text-purple-400" />
                     <div className="text-left">
-                      <div className="text-white font-semibold">SMS no Celular</div>
+                      <div className="text-white font-semibold">
+                        SMS no Celular
+                      </div>
                       <div className="text-xs text-slate-400">
                         {telefoneCelular || "Não cadastrado"}
                       </div>
@@ -665,7 +788,9 @@ export default function EmployeeConfiguracoes() {
                   >
                     <UserCheck className="h-4 w-4 mr-3 text-amber-400" />
                     <div className="text-left">
-                      <div className="text-white font-semibold">Validação do Supervisor</div>
+                      <div className="text-white font-semibold">
+                        Validação do Supervisor
+                      </div>
                       <div className="text-xs text-slate-400">
                         Solicitar código ao seu supervisor direto
                       </div>
@@ -689,26 +814,34 @@ export default function EmployeeConfiguracoes() {
                 <div className="flex items-center gap-2 mb-4">
                   <Key className="h-5 w-5 text-blue-400" />
                   <div>
-                    <h4 className="text-sm font-semibold text-white">Digite o Código</h4>
+                    <h4 className="text-sm font-semibold text-white">
+                      Digite o Código
+                    </h4>
                     <p className="text-xs text-slate-400">
-                      Código enviado para {
-                        canalEscolhido === "email-institucional" ? emailInstitucional :
-                        canalEscolhido === "email-pessoal" ? emailPessoal :
-                        canalEscolhido === "telefone" ? telefoneCelular :
-                        "seu supervisor"
-                      }
+                      Código enviado para{" "}
+                      {canalEscolhido === "email-institucional"
+                        ? emailInstitucional
+                        : canalEscolhido === "email-pessoal"
+                        ? emailPessoal
+                        : canalEscolhido === "telefone"
+                        ? telefoneCelular
+                        : "seu supervisor"}
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="codigo" className="text-slate-300">Código de Verificação (6 dígitos)</Label>
+                  <Label htmlFor="codigo" className="text-slate-300">
+                    Código de Verificação (6 dígitos)
+                  </Label>
                   <Input
                     id="codigo"
                     type="text"
                     maxLength={6}
                     value={codigoVerificacao}
-                    onChange={(e) => setCodigoVerificacao(e.target.value.replace(/\D/g, ''))}
+                    onChange={(e) =>
+                      setCodigoVerificacao(e.target.value.replace(/\D/g, ""))
+                    }
                     className="bg-slate-900/50 border-slate-700/50 text-white text-center text-2xl tracking-widest"
                     placeholder="000000"
                   />
@@ -718,7 +851,7 @@ export default function EmployeeConfiguracoes() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button 
+                  <Button
                     onClick={handleValidarCodigo}
                     className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                     disabled={codigoVerificacao.length !== 6}
@@ -755,9 +888,12 @@ export default function EmployeeConfiguracoes() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-white mb-2">Senha Alterada!</h4>
+                  <h4 className="text-lg font-semibold text-white mb-2">
+                    Senha Alterada!
+                  </h4>
                   <p className="text-sm text-slate-400">
-                    Sua senha foi atualizada com sucesso.<br />
+                    Sua senha foi atualizada com sucesso.
+                    <br />
                     Use a nova senha no próximo login.
                   </p>
                 </div>
@@ -771,8 +907,12 @@ export default function EmployeeConfiguracoes() {
               <div className="flex items-center gap-3">
                 <Shield className="h-4 w-4 text-slate-400" />
                 <div>
-                  <Label htmlFor="2fa" className="text-white font-semibold">Autenticação de 2 Fatores</Label>
-                  <p className="text-sm text-slate-400">Adicione uma camada extra de segurança</p>
+                  <Label htmlFor="2fa" className="text-white font-semibold">
+                    Autenticação de 2 Fatores
+                  </Label>
+                  <p className="text-sm text-slate-400">
+                    Adicione uma camada extra de segurança
+                  </p>
                 </div>
               </div>
               <Switch
@@ -782,8 +922,8 @@ export default function EmployeeConfiguracoes() {
                   setAutenticacao2FA(checked);
                   toast({
                     title: checked ? "🔒 2FA Ativado" : "2FA Desativado",
-                    description: checked 
-                      ? "Autenticação de 2 fatores está ativa." 
+                    description: checked
+                      ? "Autenticação de 2 fatores está ativa."
                       : "Autenticação de 2 fatores foi desativada.",
                   });
                 }}
@@ -803,8 +943,9 @@ export default function EmployeeConfiguracoes() {
                     Sistema de Segurança Multi-Canal
                   </p>
                   <p className="text-xs text-slate-400">
-                    Para maior segurança, mantenha seus contatos atualizados. 
-                    Em caso de alteração de senha, você receberá um código de verificação.
+                    Para maior segurança, mantenha seus contatos atualizados. Em
+                    caso de alteração de senha, você receberá um código de
+                    verificação.
                   </p>
                 </div>
               </div>
@@ -815,8 +956,9 @@ export default function EmployeeConfiguracoes() {
                     Dica de Segurança
                   </p>
                   <p className="text-xs text-slate-400">
-                    Nunca compartilhe sua senha ou códigos de verificação. 
-                    A prefeitura nunca solicitará essas informações por telefone ou e-mail.
+                    Nunca compartilhe sua senha ou códigos de verificação. A
+                    prefeitura nunca solicitará essas informações por telefone
+                    ou e-mail.
                   </p>
                 </div>
               </div>
@@ -824,6 +966,6 @@ export default function EmployeeConfiguracoes() {
           </CardContent>
         </Card>
       </div>
-    </AppLayout>
+    </EmployeeLayout>
   );
 }

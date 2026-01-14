@@ -27,7 +27,7 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
   useEffect(() => {
     const updateUnreadCount = () => {
       try {
-        const raw = localStorage.getItem('notifications');
+        const raw = localStorage.getItem("notifications");
         if (raw) {
           const notifications = JSON.parse(raw);
           const count = notifications.filter((n: any) => !n.read).length;
@@ -43,10 +43,27 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
     // Atualizar na montagem
     updateUnreadCount();
 
-    // Atualizar quando o localStorage mudar (quando navegar de volta)
-    const interval = setInterval(updateUnreadCount, 1000);
+    // Atualizar quando houver mudança no storage (em outra aba ou componente)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "notifications") {
+        updateUnreadCount();
+      }
+    };
 
-    return () => clearInterval(interval);
+    // Listener customizado para atualizações no mesmo contexto
+    const handleCustomUpdate = () => updateUnreadCount();
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("notificationsUpdated", handleCustomUpdate);
+
+    // Atualizar periodicamente (a cada 30 segundos ao invés de 1 segundo)
+    const interval = setInterval(updateUnreadCount, 30000);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("notificationsUpdated", handleCustomUpdate);
+    };
   }, []);
 
   return (
@@ -68,9 +85,13 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
         </Button>
 
         <div className="min-w-0">
-          <h1 className="font-display text-lg sm:text-xl font-black text-white">{title}</h1>
+          <h1 className="font-display text-lg sm:text-xl font-black text-white">
+            {title}
+          </h1>
           {subtitle && (
-            <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 hidden sm:block font-medium">{subtitle}</p>
+            <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 hidden sm:block font-medium">
+              {subtitle}
+            </p>
           )}
         </div>
       </div>
@@ -84,7 +105,7 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
             type="text"
             placeholder="Buscar..."
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 const value = (e.target as HTMLInputElement).value.trim();
                 if (value) navigate(`/buscar?q=${encodeURIComponent(value)}`);
               }
@@ -97,7 +118,7 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate('/notificacoes')}
+          onClick={() => navigate("/notificacoes")}
           className="relative h-9 w-9 text-slate-400 hover:text-white hover:bg-slate-700/40 rounded-lg transition-all border border-transparent hover:border-slate-600/40"
         >
           <Bell className="h-5 w-5" />
@@ -112,27 +133,46 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
         <div className="border-l border-slate-700/50 pl-1 sm:pl-3 ml-0.5 sm:ml-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-9 gap-2 px-1.5 sm:px-2 hover:bg-slate-700/40 rounded-lg transition-all text-slate-300 border border-transparent hover:border-slate-600/40">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-9 gap-2 px-1.5 sm:px-2 hover:bg-slate-700/40 rounded-lg transition-all text-slate-300 border border-transparent hover:border-slate-600/40"
+              >
                 <Avatar className="h-7 w-7 ring-2 ring-slate-500/40 ring-offset-2 ring-offset-slate-900">
                   <AvatarImage src="" />
                   <AvatarFallback className="bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 text-white text-[10px] font-bold">
                     AD
                   </AvatarFallback>
                 </Avatar>
-                <span className="hidden lg:inline text-xs sm:text-sm font-semibold text-slate-200">{currentUser?.fullName ?? 'Usuário'}</span>
+                <span className="hidden lg:inline text-xs sm:text-sm font-semibold text-slate-200">
+                  {currentUser?.fullName ?? "Usuário"}
+                </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44 bg-slate-900 border border-slate-700/50 shadow-2xl shadow-slate-900/50 backdrop-blur-md">
+            <DropdownMenuContent
+              align="end"
+              className="w-44 bg-slate-900 border border-slate-700/50 shadow-2xl shadow-slate-900/50 backdrop-blur-md"
+            >
               <div className="px-2 py-1.5 border-b border-slate-700/30">
-                <p className="text-xs sm:text-sm font-semibold text-white">{currentUser?.fullName ?? 'Usuário'}</p>
-                <p className="text-[10px] text-slate-400">{currentUser?.role ?? 'SEM PERMISSÃO'}</p>
+                <p className="text-xs sm:text-sm font-semibold text-white">
+                  {currentUser?.fullName ?? "Usuário"}
+                </p>
+                <p className="text-[10px] text-slate-400">
+                  {currentUser?.role ?? "SEM PERMISSÃO"}
+                </p>
               </div>
               <DropdownMenuSeparator className="bg-slate-700/30" />
-              <DropdownMenuItem className="cursor-pointer text-xs sm:text-sm text-slate-300 hover:text-white focus:bg-slate-800/50 transition-all" onClick={() => navigate('/perfil')}>
+              <DropdownMenuItem
+                className="cursor-pointer text-xs sm:text-sm text-slate-300 hover:text-white focus:bg-slate-800/50 transition-all"
+                onClick={() => navigate("/perfil")}
+              >
                 <User className="mr-2 h-3.5 w-3.5" />
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer text-xs sm:text-sm text-slate-300 hover:text-white focus:bg-slate-800/50 transition-all" onClick={() => navigate('/configuracoes')}>
+              <DropdownMenuItem
+                className="cursor-pointer text-xs sm:text-sm text-slate-300 hover:text-white focus:bg-slate-800/50 transition-all"
+                onClick={() => navigate("/configuracoes")}
+              >
                 <span>Configurações</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-slate-700/30" />
@@ -140,7 +180,7 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
                 className="cursor-pointer text-red-500 hover:text-red-400 focus:bg-red-950/60 text-xs sm:text-sm transition-all"
                 onClick={() => {
                   secureLogout();
-                  navigate('/login', { replace: true });
+                  navigate("/login", { replace: true });
                 }}
               >
                 <LogOut className="mr-2 h-3.5 w-3.5" />

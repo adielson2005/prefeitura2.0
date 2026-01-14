@@ -7,6 +7,8 @@ import { useState, useEffect, useCallback } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Clock,
   MapPin,
@@ -16,13 +18,16 @@ import {
   AlertCircle,
   ChevronRight,
   Loader2,
+  Upload,
+  X,
+  Image as ImageIcon,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { registerTimeRecord, getTimeRecords } from "@/lib/supabaseAuth";
 import { getCurrentUser } from "@/lib/supabaseAuth";
 import { useToast } from "@/hooks/use-toast";
+import { apiService } from "@/lib/apiService";
 
 type PunchType = "entrada" | "intervalo" | "retorno" | "saida";
 
@@ -40,34 +45,33 @@ export default function EmployeePonto() {
   const [todayRecords, setTodayRecords] = useState<PunchRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingRecords, setIsLoadingRecords] = useState(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const loadTodayRecords = useCallback(async () => {
+  const loadTodayRecords = async () => {
     if (!currentUser) return;
 
     setIsLoadingRecords(true);
     try {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      const result = await getTimeRecords(currentUser.id, today, tomorrow);
+      // Usar API backend com fallback para Supabase
+      const result = await apiService.getUserTimeRecords(
+        currentUser.id,
+        today.toISOString(),
+        tomorrow.toISOString()
+      );
 
       if (result.success && result.data) {
-        const records = result.data.map(
-          (record: {
-            id: number;
-            punch_type: string;
-            punch_time: string;
-            location_name?: string;
-          }) => ({
-            id: record.id,
-            type: record.punch_type.toLowerCase() as PunchType,
-            time: format(new Date(record.punch_time), "HH:mm:ss"),
-            location: record.location_name || "Local não informado",
-          })
-        );
+        const records = result.data.map((record: any) => ({
+          id: record.id,
+          type: record.punch_type?.toLowerCase() as PunchType,
+          time: format(new Date(record.punch_time), "HH:mm:ss"),
+          location: record.location_name || "Local não informado",
+        }));
         setTodayRecords(records);
       }
     } catch (error) {
@@ -75,12 +79,13 @@ export default function EmployeePonto() {
     } finally {
       setIsLoadingRecords(false);
     }
-  }, [currentUser]);
+  };
 
   // Carregar registros do dia ao montar o componente
   useEffect(() => {
     loadTodayRecords();
-  }, [loadTodayRecords]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -134,26 +139,43 @@ export default function EmployeePonto() {
     setIsLoading(true);
 
     try {
+      let uploadedFileUrl: string | undefined;
+
+      // Se houver arquivo, fazer upload primeiro
+      if (selectedFile) {
+        const uploadResult = await apiService.uploadFile(
+          selectedFile,
+          currentUser.id
+        );
+        if (uploadResult.success && uploadResult.file) {
+          uploadedFileUrl = uploadResult.file.url;
+        }
+      }
+
       // Obter localização (simplificado - em produção usar navigator.geolocation)
       const location = {
         latitude: -23.55052,
         longitude: -46.633308,
-        name: "Praça Central - São Paulo, SP",
       };
 
-      // Registrar no Supabase
-      const result = await registerTimeRecord(
-        currentUser.id,
-        nextPunch.toUpperCase() as
+      // Registrar via API backend
+      const result = await apiService.registerPunch({
+        userId: currentUser.id,
+        punchType: nextPunch.toUpperCase() as
           | "ENTRADA"
           | "INTERVALO"
           | "RETORNO"
           | "SAIDA",
         location,
-        `Registro via app - ${format(currentTime, "HH:mm:ss")}`
-      );
+        notes: `Registro via app - ${format(currentTime, "HH:mm:ss")}`,
+        attachmentUrl: uploadedFileUrl,
+      });
 
       if (result.success) {
+        // Limpar arquivo selecionado
+        setSelectedFile(null);
+        setPreviewUrl(null);
+
         // Atualizar lista local
         await loadTodayRecords();
 
@@ -187,6 +209,55 @@ export default function EmployeePonto() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "application/pdf",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Arquivo inválido",
+        description: "Apenas imagens (JPG, PNG) e PDF são permitidos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar tamanho (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Arquivo muito grande",
+        description: "O arquivo deve ter no máximo 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedFile(file);
+
+    // Criar preview apenas para imagens
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
   };
 
   const getPunchTypeLabel = (type: PunchType) => {
@@ -223,6 +294,76 @@ export default function EmployeePonto() {
               {format(currentTime, "EEEE, d 'de' MMMM 'de' yyyy", {
                 locale: ptBR,
               })}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Upload de Comprovante */}
+        <Card className="bg-gradient-to-br from-slate-800/90 via-slate-900/80 to-slate-950/90 backdrop-blur-md border border-blue-500/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg text-white font-bold flex items-center gap-2">
+              <Upload className="h-5 w-5 text-blue-400" />
+              Anexar Comprovante (Opcional)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {!selectedFile ? (
+              <div>
+                <Label
+                  htmlFor="file-upload"
+                  className="cursor-pointer block p-6 border-2 border-dashed border-blue-500/50 rounded-lg hover:border-blue-400/70 transition-all bg-slate-700/30 hover:bg-slate-700/50 text-center"
+                >
+                  <ImageIcon className="h-12 w-12 mx-auto mb-3 text-blue-400" />
+                  <p className="text-white font-semibold mb-1">
+                    Clique para adicionar foto/documento
+                  </p>
+                  <p className="text-xs text-slate-300">
+                    JPG, PNG ou PDF até 5MB
+                  </p>
+                </Label>
+                <Input
+                  id="file-upload"
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,application/pdf"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </div>
+            ) : (
+              <div className="relative p-4 border-2 border-blue-500/50 rounded-lg bg-slate-700/30">
+                <button
+                  onClick={handleRemoveFile}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+
+                {previewUrl ? (
+                  <div className="space-y-2">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-full h-48 object-cover rounded-lg border border-blue-400/30"
+                    />
+                    <p className="text-sm text-slate-300 text-center truncate">
+                      {selectedFile.name}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <ImageIcon className="h-12 w-12 mx-auto mb-2 text-blue-400" />
+                    <p className="text-white font-semibold">
+                      {selectedFile.name}
+                    </p>
+                    <p className="text-xs text-slate-300">
+                      {(selectedFile.size / 1024).toFixed(2)} KB
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+            <p className="text-xs text-slate-400">
+              💡 Anexe fotos ou documentos como comprovante de presença
             </p>
           </CardContent>
         </Card>
