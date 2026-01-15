@@ -14,7 +14,9 @@ dist-ssr
 
 # Variáveis de ambiente
 .env
-.env.*
+.env.local
+.env.development
+# .env.production - permitir commit para Vercel funcionar
 
 # Editor directories and files
 .vscode/*
