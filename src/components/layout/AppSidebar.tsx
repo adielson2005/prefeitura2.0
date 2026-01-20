@@ -114,7 +114,7 @@ const employeeNavItems = [
   },
   {
     title: "Minha Escala",
-    url: "/funcionario/escala",
+    url: "/funcionario/escalas",
     icon: Calendar,
     roles: ["VIGIA", "VIGILANTE", "GUARDA"],
   },

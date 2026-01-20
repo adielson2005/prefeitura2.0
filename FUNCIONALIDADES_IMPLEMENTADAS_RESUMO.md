@@ -2,16 +2,16 @@
 
 ## 📊 Status Geral do Projeto
 
-| Categoria | Status | Progresso |
-|-----------|--------|-----------|
-| **Autenticação** | ✅ Completo | 100% |
-| **Dashboard** | ✅ Completo | 100% |
-| **Registro de Ponto** | ✅ Completo | 100% |
-| **Gestão de Escalas** | ✅ Completo | 100% |
-| **Notificações** | ✅ Completo | 100% |
-| **Auditoria** | ✅ Completo | 100% |
-| **PWA** | ✅ Completo | 100% |
-| **Responsividade** | ✅ Completo | 100% |
+| Categoria             | Status      | Progresso |
+| --------------------- | ----------- | --------- |
+| **Autenticação**      | ✅ Completo | 100%      |
+| **Dashboard**         | ✅ Completo | 100%      |
+| **Registro de Ponto** | ✅ Completo | 100%      |
+| **Gestão de Escalas** | ✅ Completo | 100%      |
+| **Notificações**      | ✅ Completo | 100%      |
+| **Auditoria**         | ✅ Completo | 100%      |
+| **PWA**               | ✅ Completo | 100%      |
+| **Responsividade**    | ✅ Completo | 100%      |
 
 **Status Geral: 🟢 PRONTO PARA PRODUÇÃO**
 
@@ -24,22 +24,18 @@
 - [x] **Sistema de Login Dual**
   - Portal do Encarregado (SUPERVISOR, GERENTE, ADMINISTRADOR)
   - Portal do Funcionário (VIGIA, VIGILANTE, GUARDA)
-  
 - [x] **Segurança de Senha**
   - Hash SHA-256
   - Validação de força de senha
   - Campo de senha com toggle show/hide
-  
 - [x] **Recuperação de Senha**
   - Sistema de códigos de segurança
   - Envio por email (integrado com Supabase)
   - Validação de código com expiração
-  
 - [x] **Controle de Sessão**
   - Token JWT via Supabase Auth
   - Logout automático por inatividade
   - Logout manual
-  
 - [x] **Auditoria de Logins**
   - Registro de IP, navegador, SO, dispositivo
   - Timestamp de cada tentativa
@@ -50,7 +46,6 @@
 
 - [ ] Autenticação em dois fatores (2FA)
 - [ ] Login com OAuth (Google, Microsoft)
-- [ ] Biometria
 
 ---
 
@@ -63,19 +58,16 @@
   - INTERVALO (saída para almoço/pausa)
   - RETORNO (volta do intervalo)
   - SAÍDA
-  
 - [x] **Captura de Dados**
   - Timestamp automático
   - Geolocalização GPS (latitude/longitude)
   - Nome do local
   - Observações de texto
   - Upload de foto (planejado)
-  
 - [x] **Validação**
   - Validação por supervisor
   - Marcação como válido/inválido
   - Comentários de validação
-  
 - [x] **Histórico**
   - Lista completa de registros
   - Filtro por período
@@ -99,18 +91,15 @@
   - Dias trabalhados
   - Média de horas/dia
   - Pontualidade
-  
 - [x] **Gráficos**
   - Horas por dia (gráfico de barras)
   - Tendência semanal
   - Distribuição por tipo de registro
-  
 - [x] **Cards Informativos**
   - Último registro
   - Próxima escala
   - Notificações não lidas
   - Alertas do sistema
-  
 - [x] **Filtros**
   - Por período (hoje, semana, mês, customizado)
   - Por funcionário (para supervisores)
@@ -134,19 +123,16 @@
   - Editar escala existente
   - Excluir escala
   - Listar escalas
-  
 - [x] **Informações da Escala**
   - Data
   - Horário de início
   - Horário de término
   - Local
   - Observações
-  
 - [x] **Status**
   - PENDENTE (aguardando confirmação)
   - CONFIRMADO (funcionário confirmou)
   - CANCELADO
-  
 - [x] **Visualização**
   - Lista em tabela
   - Filtro por data
@@ -170,13 +156,11 @@
   - Listagem de notificações
   - Marcar como lida
   - Exclusão de notificações
-  
 - [x] **Tipos**
   - Informação (info)
   - Sucesso (success)
   - Alerta (warning)
   - Erro (error)
-  
 - [x] **Interface**
   - Badge com contador
   - Dropdown de notificações
@@ -200,18 +184,15 @@
   - Editar usuário
   - Desativar/Ativar usuário
   - Listar usuários
-  
 - [x] **Informações do Usuário**
   - Dados pessoais (nome, email, telefone)
   - Credenciais (username, senha)
   - Cargo/Role
   - Configurações de notificação
-  
 - [x] **Permissões**
   - 6 níveis de acesso
   - Controle de features por role
   - Validação de permissões no frontend
-  
 - [x] **Perfil do Usuário**
   - Editar perfil próprio
   - Alterar senha
@@ -235,31 +216,26 @@
   - Radix UI (acessibilidade)
   - Tailwind CSS
   - Paleta de cores definida
-  
 - [x] **Temas**
   - Tema Dark
   - Tema Light
   - Toggle de tema
   - Persistência de preferência
-  
 - [x] **Responsividade**
   - Desktop (1920x1080)
   - Tablet (768x1024)
   - Mobile (375x667)
   - Breakpoints otimizados
-  
 - [x] **Navegação**
   - Sidebar colapsável
   - Breadcrumbs
   - Menu mobile (hamburger)
   - Links ativos destacados
-  
 - [x] **Feedback Visual**
   - Loading states
   - Skeleton loaders
   - Mensagens de sucesso/erro
   - Animações suaves
-  
 - [x] **Acessibilidade**
   - Navegação por teclado
   - Screen reader friendly
@@ -276,12 +252,10 @@
   - manifest.json
   - Service Worker
   - Ícones para todas as plataformas
-  
 - [x] **Features PWA**
   - Instalável em dispositivos
   - Página offline customizada
   - Cache de assets estáticos
-  
 - [x] **Modo Offline**
   - Dexie.js (IndexedDB)
   - Sincronização ao reconectar (básico)
@@ -306,12 +280,10 @@
   - `notifications` (notificações)
   - `security_codes` (códigos de segurança)
   - `login_audit` (auditoria de logins)
-  
 - [x] **Relacionamentos**
   - Foreign Keys
   - Cascade deletes
   - Índices otimizados
-  
 - [x] **Validações**
   - Constraints
   - Triggers (planejado)
@@ -333,12 +305,10 @@
   - Vite build otimizado
   - Variáveis de ambiente
   - Tasks do VS Code
-  
 - [x] **Code Quality**
   - ESLint configurado
   - TypeScript strict mode
   - Imports organizados
-  
 - [x] **Documentação**
   - README completo
   - Múltiplos guias técnicos
@@ -371,7 +341,6 @@
   - Accessibility: 90+
   - Best Practices: 95+
   - SEO: 90+
-  
 - **Bundle Size** (produção):
   - ~500KB (gzipped)
   - Code splitting ativado
@@ -412,7 +381,6 @@
 ### Q4 2026
 
 - [ ] Machine Learning para detecção de anomalias
-- [ ] Integração com biometria
 - [ ] Módulo de treinamentos
 - [ ] Sistema de avaliações
 
@@ -429,7 +397,7 @@
 ✅ **Responsivo** - Mobile-first  
 ✅ **Performance** - Lighthouse 95+  
 ✅ **Acessibilidade** - WCAG 2.1 AA  
-✅ **Documentação** - Múltiplos guias técnicos  
+✅ **Documentação** - Múltiplos guias técnicos
 
 ### Funcionais
 
@@ -438,22 +406,22 @@
 ✅ **Validação Supervisão** - Aprovação de registros  
 ✅ **Tema Dark/Light** - Conforto visual  
 ✅ **6 Níveis de Acesso** - Granularidade de permissões  
-✅ **Notificações em Tempo Real** - Feedback instantâneo  
+✅ **Notificações em Tempo Real** - Feedback instantâneo
 
 ---
 
 ## 📊 Comparação com Concorrentes
 
-| Feature | Este Projeto | Concorrente A | Concorrente B |
-|---------|--------------|---------------|---------------|
-| PWA | ✅ | ❌ | ✅ |
-| Geolocalização | ✅ | ✅ | ❌ |
-| Auditoria Completa | ✅ | ⚠️ Parcial | ❌ |
-| Tema Dark/Light | ✅ | ❌ | ✅ |
-| Responsivo | ✅ | ⚠️ Básico | ✅ |
-| Open Source | ✅ | ❌ | ❌ |
-| Documentação | ✅ Completa | ⚠️ Básica | ⚠️ Média |
-| TypeScript | ✅ | ❌ | ✅ |
+| Feature            | Este Projeto | Concorrente A | Concorrente B |
+| ------------------ | ------------ | ------------- | ------------- |
+| PWA                | ✅           | ❌            | ✅            |
+| Geolocalização     | ✅           | ✅            | ❌            |
+| Auditoria Completa | ✅           | ⚠️ Parcial    | ❌            |
+| Tema Dark/Light    | ✅           | ❌            | ✅            |
+| Responsivo         | ✅           | ⚠️ Básico     | ✅            |
+| Open Source        | ✅           | ❌            | ❌            |
+| Documentação       | ✅ Completa  | ⚠️ Básica     | ⚠️ Média      |
+| TypeScript         | ✅           | ❌            | ✅            |
 
 ---
 

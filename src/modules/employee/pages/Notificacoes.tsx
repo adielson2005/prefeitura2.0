@@ -307,16 +307,16 @@ export default function EmployeeNotificacoes() {
 
   return (
     <EmployeeLayout title="Notificações" showNotifications={false}>
-      <div className="space-y-6">
+      <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
         {/* Header com Stats */}
         <Card className="bg-gradient-to-br from-slate-800/90 via-slate-900/80 to-slate-950/90 backdrop-blur-md border-violet-500/50">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold text-white mb-1">
+          <CardContent className="p-4 sm:p-5 md:p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-1 truncate">
                   Central de Notificações
                 </h2>
-                <p className="text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-400">
                   {unreadCount > 0 ? (
                     <>
                       Você tem{" "}
@@ -330,14 +330,14 @@ export default function EmployeeNotificacoes() {
                   )}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                 {/* Botão de Som */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setSoundEnabled(!soundEnabled)}
                   className={cn(
-                    "h-10 w-10 rounded-full transition-colors",
+                    "h-8 w-8 sm:h-10 sm:w-10 rounded-full transition-colors",
                     soundEnabled
                       ? "text-violet-400 hover:bg-violet-500/10 hover:text-violet-300"
                       : "text-slate-500 hover:bg-slate-700/50 hover:text-slate-400"
@@ -345,17 +345,17 @@ export default function EmployeeNotificacoes() {
                   title={soundEnabled ? "Som ativado" : "Som desativado"}
                 >
                   {soundEnabled ? (
-                    <Volume2 className="h-5 w-5" />
+                    <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />
                   ) : (
-                    <VolumeX className="h-5 w-5" />
+                    <VolumeX className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </Button>
 
                 {/* Ícone do Sino */}
                 <div className="relative">
-                  <Bell className="h-12 w-12 text-violet-400" />
+                  <Bell className="h-10 w-10 sm:h-12 sm:w-12 text-violet-400" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] sm:text-xs font-bold rounded-full h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center">
                       {unreadCount}
                     </span>
                   )}
@@ -367,10 +367,10 @@ export default function EmployeeNotificacoes() {
 
         {/* Filtros */}
         <Card className="bg-slate-800/90 border-slate-700/50">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg text-white flex items-center gap-2">
-                <Filter className="h-5 w-5 text-slate-400" />
+          <CardHeader className="p-4 sm:p-5 md:p-6 pb-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <CardTitle className="text-base sm:text-lg md:text-xl text-white flex items-center gap-2">
+                <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-slate-400 flex-shrink-0" />
                 Filtros
               </CardTitle>
               {unreadCount > 0 && (
@@ -378,15 +378,18 @@ export default function EmployeeNotificacoes() {
                   variant="ghost"
                   size="sm"
                   onClick={markAllAsRead}
-                  className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10"
+                  className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 text-xs sm:text-sm h-8 sm:h-9"
                 >
-                  <CheckCheck className="h-4 w-4 mr-2" />
-                  Marcar todas como lidas
+                  <CheckCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                  <span className="hidden sm:inline">
+                    Marcar todas como lidas
+                  </span>
+                  <span className="sm:hidden">Marcar lidas</span>
                 </Button>
               )}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-5 md:p-6 pt-0">
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={filter === "all" ? "default" : "outline"}
@@ -507,19 +510,24 @@ export default function EmployeeNotificacoes() {
                     !notification.read && "shadow-lg"
                   )}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex gap-4">
+                  <CardContent className="p-3 sm:p-4 md:p-5">
+                    <div className="flex gap-2 sm:gap-3 md:gap-4">
                       {/* Ícone */}
-                      <div className={cn("flex-shrink-0 mt-1", iconColor)}>
-                        <Icon className="h-6 w-6" />
+                      <div
+                        className={cn(
+                          "flex-shrink-0 mt-0.5 sm:mt-1",
+                          iconColor
+                        )}
+                      >
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
 
                       {/* Conteúdo */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex items-start justify-between gap-2 mb-1.5 sm:mb-2">
                           <h4
                             className={cn(
-                              "font-semibold",
+                              "font-semibold text-sm sm:text-base",
                               notification.read
                                 ? "text-slate-300"
                                 : "text-white"
@@ -527,11 +535,14 @@ export default function EmployeeNotificacoes() {
                           >
                             {notification.title}
                             {!notification.read && (
-                              <span className="ml-2 inline-block w-2 h-2 bg-violet-500 rounded-full animate-pulse" />
+                              <span className="ml-2 inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 bg-violet-500 rounded-full animate-pulse" />
                             )}
                           </h4>
                           {notification.priority === "high" && (
-                            <Badge variant="destructive" className="text-xs">
+                            <Badge
+                              variant="destructive"
+                              className="text-[10px] sm:text-xs flex-shrink-0"
+                            >
                               Urgente
                             </Badge>
                           )}
@@ -539,7 +550,7 @@ export default function EmployeeNotificacoes() {
 
                         <p
                           className={cn(
-                            "text-sm mb-3",
+                            "text-xs sm:text-sm mb-2 sm:mb-3",
                             notification.read
                               ? "text-slate-400"
                               : "text-slate-200"

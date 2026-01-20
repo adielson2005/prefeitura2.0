@@ -8,8 +8,8 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Planejado
+
 - Reconhecimento facial para validação
-- Integração com biometria
 - Aplicativo mobile nativo (React Native)
 - Relatórios avançados com BI
 - API REST documentada (Swagger)
@@ -23,6 +23,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 #### ✨ Adicionado
 
 **Autenticação e Segurança**
+
 - Sistema de login com username/senha
 - Hash de senha com SHA-256
 - Auditoria completa de logins (IP, dispositivo, navegador, SO)
@@ -31,6 +32,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Diferentes níveis de acesso (VIGIA, VIGILANTE, GUARDA, SUPERVISOR, GERENTE, ADMINISTRADOR)
 
 **Registro de Ponto**
+
 - Registro de ENTRADA, INTERVALO, RETORNO e SAÍDA
 - Captura automática de geolocalização GPS
 - Upload de foto para validação
@@ -39,6 +41,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Edição e correção de registros com justificativa
 
 **Dashboard e Relatórios**
+
 - Dashboard interativo com estatísticas em tempo real
 - Gráficos de horas trabalhadas com Recharts
 - Relatórios personalizáveis por período
@@ -46,24 +49,28 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Análise de frequência e pontualidade
 
 **Gestão de Escalas**
+
 - Criação e edição de escalas de trabalho
 - Confirmação de turnos pelos funcionários
 - Visualização em calendário
 - Status de escalas (PENDENTE, CONFIRMADO, CANCELADO)
 
 **Notificações**
+
 - Sistema de notificações em tempo real
 - Alertas de escala próxima
 - Lembretes de registro de ponto
 - Configuração personalizada de canais (email, push, SMS)
 
 **Gestão de Usuários**
+
 - CRUD completo de usuários para administradores
 - Gerenciamento de permissões
 - Ativação/desativação de contas
 - Histórico de atividades
 
 **Interface e UX**
+
 - Design responsivo (desktop, tablet, mobile)
 - Tema dark/light com persistência
 - Componentes acessíveis com Radix UI
@@ -71,6 +78,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Feedback visual para todas as ações
 
 **Infraestrutura**
+
 - Progressive Web App (PWA)
 - Modo offline com Dexie.js
 - Build otimizado com Vite
@@ -80,6 +88,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 #### 🛠️ Tecnologias Utilizadas
 
 **Frontend**
+
 - React 18.3.1
 - TypeScript 5.6.2
 - Vite 6.0.5
@@ -95,11 +104,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Lucide React 0.469.0
 
 **Backend / Database**
+
 - Supabase 2.89.0
 - PostgreSQL (via Supabase)
 - Dexie.js 4.2.1 (IndexedDB)
 
 **DevOps**
+
 - ESLint 9.18.0
 - Vite PWA Plugin 0.21.4
 
@@ -114,6 +125,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 #### 🗃️ Banco de Dados
 
 **Tabelas Criadas**
+
 - `users` - Usuários do sistema
 - `time_records` - Registros de ponto
 - `shifts` - Escalas de trabalho
@@ -122,11 +134,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - `login_audit` - Auditoria de logins
 
 **Tipos Enum**
+
 - `user_role` - Papéis de usuário
 - `punch_type` - Tipos de registro de ponto
 - `shift_status` - Status de escalas
 
 **Funcionalidades do Banco**
+
 - Índices otimizados para consultas rápidas
 - Validação de dados com constraints
 - Relacionamentos com CASCADE
@@ -156,11 +170,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [0.9.0] - 2026-01-05
 
 ### Adicionado
+
 - Protótipo inicial do dashboard
 - Sistema básico de autenticação
 - Estrutura de componentes shadcn/ui
 
 ### Alterado
+
 - Migração de JavaScript para TypeScript
 - Atualização de dependências
 
@@ -169,6 +185,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [0.5.0] - 2025-12-15
 
 ### Adicionado
+
 - Configuração inicial do projeto
 - Setup do Vite + React
 - Instalação do Tailwind CSS

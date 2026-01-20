@@ -268,15 +268,15 @@ export default function EmployeeConfiguracoes() {
 
   return (
     <EmployeeLayout title="Configurações">
-      <div className="space-y-6 p-4">
+      <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-5 md:space-y-6 p-3 sm:p-4">
         {/* Notificações */}
         <Card className="bg-gradient-to-br from-slate-800/90 via-slate-900/80 to-slate-950/90 backdrop-blur-md border border-violet-500/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <Bell className="h-5 w-5 text-violet-400" />
+          <CardHeader className="p-4 sm:p-5 md:p-6">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl text-white">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-violet-400 flex-shrink-0" />
               Notificações
             </CardTitle>
-            <CardDescription className="text-slate-300">
+            <CardDescription className="text-xs sm:text-sm text-slate-300">
               Configure como e quando você deseja ser notificado
             </CardDescription>
           </CardHeader>
@@ -287,10 +287,13 @@ export default function EmployeeConfiguracoes() {
                 Registro de Ponto
               </h4>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-slate-400" />
-                  <Label htmlFor="ponto-email" className="text-slate-300">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                  <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-slate-400 flex-shrink-0" />
+                  <Label
+                    htmlFor="ponto-email"
+                    className="text-xs sm:text-sm text-slate-300 truncate"
+                  >
                     Notificações por e-mail
                   </Label>
                 </div>
@@ -376,9 +379,9 @@ export default function EmployeeConfiguracoes() {
 
             <Button
               onClick={handleSalvarNotificacoes}
-              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
+              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-xs sm:text-sm h-9 sm:h-10 md:h-11"
             >
-              <Save className="h-4 w-4 mr-2" />
+              <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
               Salvar Preferências
             </Button>
           </CardContent>
@@ -389,21 +392,23 @@ export default function EmployeeConfiguracoes() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
               {theme === "dark" ? (
-                <Moon className="h-5 w-5 text-blue-400" />
+                <Moon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 flex-shrink-0" />
               ) : (
-                <Sun className="h-5 w-5 text-blue-400" />
+                <Sun className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 flex-shrink-0" />
               )}
               Aparência
             </CardTitle>
-            <CardDescription className="text-slate-300">
+            <CardDescription className="text-xs sm:text-sm text-slate-300">
               Personalize a aparência do sistema
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
+          <CardContent className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between gap-2">
               <div>
-                <Label className="text-white font-semibold">Tema</Label>
-                <p className="text-sm text-slate-400">
+                <Label className="text-sm sm:text-base text-white font-semibold">
+                  Tema
+                </Label>
+                <p className="text-xs sm:text-sm text-slate-400">
                   {theme === "dark" ? "Modo Escuro" : "Modo Claro"}
                 </p>
               </div>
@@ -591,15 +596,15 @@ export default function EmployeeConfiguracoes() {
                             forcaSenha.pontos >= 4
                               ? "text-green-400"
                               : forcaSenha.pontos >= 3
-                              ? "text-yellow-400"
-                              : "text-red-400"
+                                ? "text-yellow-400"
+                                : "text-red-400"
                           }`}
                         >
                           {forcaSenha.pontos >= 4
                             ? "Forte"
                             : forcaSenha.pontos >= 3
-                            ? "Média"
-                            : "Fraca"}
+                              ? "Média"
+                              : "Fraca"}
                         </span>
                       </div>
                       <div className="grid grid-cols-1 gap-1 text-xs">
@@ -822,10 +827,10 @@ export default function EmployeeConfiguracoes() {
                       {canalEscolhido === "email-institucional"
                         ? emailInstitucional
                         : canalEscolhido === "email-pessoal"
-                        ? emailPessoal
-                        : canalEscolhido === "telefone"
-                        ? telefoneCelular
-                        : "seu supervisor"}
+                          ? emailPessoal
+                          : canalEscolhido === "telefone"
+                            ? telefoneCelular
+                            : "seu supervisor"}
                     </p>
                   </div>
                 </div>

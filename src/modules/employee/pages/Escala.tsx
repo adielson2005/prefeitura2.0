@@ -124,25 +124,25 @@ export default function EmployeeEscala() {
 
   return (
     <EmployeeLayout title="Minha Escala">
-      <div className="space-y-6">
+      <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
         {/* Navegação de Semana */}
         <Card className="bg-slate-800/90 border-slate-700/50">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+          <CardHeader className="p-4 sm:p-5 md:p-6 pb-3">
+            <div className="flex items-center justify-between gap-2">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={previousWeek}
-                className="text-slate-300 hover:text-white hover:bg-slate-700"
+                className="text-slate-300 hover:text-white hover:bg-slate-700 flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
 
-              <div className="text-center">
-                <CardTitle className="text-lg text-white">
+              <div className="text-center min-w-0 flex-1">
+                <CardTitle className="text-base sm:text-lg md:text-xl text-white truncate">
                   {format(currentWeekStart, "MMMM 'de' yyyy", { locale: ptBR })}
                 </CardTitle>
-                <p className="text-sm text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-400">
                   Semana {format(currentWeekStart, "w", { locale: ptBR })}
                 </p>
               </div>
@@ -151,27 +151,27 @@ export default function EmployeeEscala() {
                 variant="ghost"
                 size="icon"
                 onClick={nextWeek}
-                className="text-slate-300 hover:text-white hover:bg-slate-700"
+                className="text-slate-300 hover:text-white hover:bg-slate-700 flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-5 md:p-6 pt-0">
             <Button
               variant="outline"
               size="sm"
-              className="w-full bg-slate-700/50 border-slate-600/50 text-white hover:bg-slate-600/50"
+              className="w-full bg-slate-700/50 border-slate-600/50 text-white hover:bg-slate-600/50 text-xs sm:text-sm"
               onClick={goToToday}
             >
-              <CalendarIcon className="h-4 w-4 mr-2" />
+              <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
               Ir para hoje
             </Button>
           </CardContent>
         </Card>
 
         {/* Escala Semanal */}
-        <div className="space-y-2">
+        <div className="space-y-2 sm:space-y-3">
           {weekDays.map((date) => {
             const shift = getShiftForDate(date);
             const today = isToday(date);
@@ -184,34 +184,34 @@ export default function EmployeeEscala() {
                   today && "ring-2 ring-blue-500 shadow-lg border-blue-500/50"
                 )}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-3">
+                <CardContent className="p-3 sm:p-4 md:p-5">
+                  <div className="flex items-start justify-between gap-2 sm:gap-3">
                     {/* Data */}
                     <div className="flex-shrink-0">
                       <div
                         className={cn(
-                          "w-12 h-12 rounded-lg flex flex-col items-center justify-center",
+                          "w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex flex-col items-center justify-center",
                           today
                             ? "bg-blue-600 text-white"
                             : "bg-slate-700/50 border border-slate-600/50 text-slate-200"
                         )}
                       >
-                        <span className="text-xs font-medium uppercase">
+                        <span className="text-[10px] sm:text-xs font-medium uppercase">
                           {format(date, "EEE", { locale: ptBR })}
                         </span>
-                        <span className="text-lg font-bold">
+                        <span className="text-base sm:text-lg font-bold">
                           {format(date, "d")}
                         </span>
                       </div>
                     </div>
 
                     {/* Detalhes do Turno */}
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       {shift ? (
-                        <div className="space-y-2">
+                        <div className="space-y-1.5 sm:space-y-2">
                           <div
                             className={cn(
-                              "inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold border",
+                              "inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] sm:text-xs font-semibold border",
                               getShiftTypeColor(shift.type)
                             )}
                           >
@@ -220,22 +220,24 @@ export default function EmployeeEscala() {
 
                           {shift.type !== "folga" && (
                             <>
-                              <div className="flex items-center gap-2 text-sm">
-                                <Clock className="h-4 w-4 text-blue-400" />
+                              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+                                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
                                 <span className="font-semibold text-white">
                                   {shift.startTime} - {shift.endTime}
                                 </span>
                               </div>
 
-                              <div className="flex items-center gap-2 text-sm text-slate-300">
-                                <MapPin className="h-4 w-4 text-green-400" />
-                                <span>{shift.location}</span>
+                              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-300">
+                                <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-green-400 flex-shrink-0" />
+                                <span className="truncate">
+                                  {shift.location}
+                                </span>
                               </div>
                             </>
                           )}
                         </div>
                       ) : (
-                        <p className="text-sm text-slate-400 italic">
+                        <p className="text-xs sm:text-sm text-slate-400 italic">
                           Sem turno agendado
                         </p>
                       )}
@@ -249,21 +251,21 @@ export default function EmployeeEscala() {
 
         {/* Resumo da Semana */}
         <Card className="bg-gradient-to-br from-blue-600/20 to-blue-700/20 border-blue-500/40">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-white">
+          <CardHeader className="p-4 sm:p-5 md:p-6 pb-3">
+            <CardTitle className="text-base sm:text-lg md:text-xl text-white">
               Resumo da Semana
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between text-sm">
+          <CardContent className="p-4 sm:p-5 md:p-6 pt-0 space-y-2 sm:space-y-3">
+            <div className="flex justify-between text-xs sm:text-sm">
               <span className="text-slate-300">Dias trabalhados</span>
               <span className="font-semibold text-white">5 dias</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-xs sm:text-sm">
               <span className="text-slate-300">Total de horas</span>
               <span className="font-semibold text-white">40h</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-xs sm:text-sm">
               <span className="text-slate-300">Turnos noturnos</span>
               <span className="font-semibold text-white">1</span>
             </div>
@@ -273,28 +275,30 @@ export default function EmployeeEscala() {
         {/* Exportar */}
         <Button
           variant="outline"
-          className="w-full bg-slate-700/50 border-slate-600/50 text-white hover:bg-slate-600/50"
+          className="w-full bg-slate-700/50 border-slate-600/50 text-white hover:bg-slate-600/50 text-xs sm:text-sm"
         >
-          <Download className="h-4 w-4 mr-2" />
+          <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-2 flex-shrink-0" />
           Exportar Escala (PDF)
         </Button>
 
         {/* Legenda */}
         <Card className="bg-slate-800/90 border-slate-700/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm text-white">Legenda</CardTitle>
+          <CardHeader className="p-4 sm:p-5 md:p-6 pb-3">
+            <CardTitle className="text-xs sm:text-sm md:text-base text-white">
+              Legenda
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-slate-300">
-              <div className="w-4 h-4 rounded bg-blue-500/20 border border-blue-500/40" />
+          <CardContent className="p-4 sm:p-5 md:p-6 pt-0 space-y-1.5 sm:space-y-2">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-300">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-blue-500/20 border border-blue-500/40 flex-shrink-0" />
               <span>Turno Diurno</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-slate-300">
-              <div className="w-4 h-4 rounded bg-purple-500/20 border border-purple-500/40" />
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-300">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-purple-500/20 border border-purple-500/40 flex-shrink-0" />
               <span>Turno Noturno</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-slate-300">
-              <div className="w-4 h-4 rounded bg-green-500/20 border border-green-500/40" />
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-300">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-green-500/20 border border-green-500/40 flex-shrink-0" />
               <span>Folga</span>
             </div>
           </CardContent>

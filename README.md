@@ -55,6 +55,7 @@ O **Sistema de Ponto Eletrônico** é uma aplicação web completa desenvolvida 
 ## ⚡ Funcionalidades
 
 ### 🔐 Autenticação e Segurança
+
 - Login com username/senha com hash SHA-256
 - Sistema de recuperação de senha por email
 - Autenticação em dois fatores (2FA)
@@ -63,6 +64,7 @@ O **Sistema de Ponto Eletrônico** é uma aplicação web completa desenvolvida 
 - Diferentes níveis de acesso (VIGIA, VIGILANTE, GUARDA, SUPERVISOR, GERENTE, ADMINISTRADOR)
 
 ### ⏰ Registro de Ponto
+
 - Registro de ENTRADA, INTERVALO, RETORNO e SAÍDA
 - Captura automática de localização GPS
 - Upload de foto para validação
@@ -71,6 +73,7 @@ O **Sistema de Ponto Eletrônico** é uma aplicação web completa desenvolvida 
 - Edição e correção de registros (com justificativa)
 
 ### 📊 Dashboard e Relatórios
+
 - Visão geral de estatísticas em tempo real
 - Gráficos de horas trabalhadas
 - Relatórios personalizáveis por período
@@ -79,6 +82,7 @@ O **Sistema de Ponto Eletrônico** é uma aplicação web completa desenvolvida 
 - Alertas de inconsistências
 
 ### 📅 Gestão de Escalas
+
 - Criação e edição de escalas de trabalho
 - Confirmação de turnos pelos funcionários
 - Notificações automáticas de escala
@@ -86,6 +90,7 @@ O **Sistema de Ponto Eletrônico** é uma aplicação web completa desenvolvida 
 - Gerenciamento de trocas de turno
 
 ### 🔔 Notificações
+
 - Notificações em tempo real
 - Alertas de escala próxima
 - Lembretes de registro de ponto
@@ -93,6 +98,7 @@ O **Sistema de Ponto Eletrônico** é uma aplicação web completa desenvolvida 
 - Configuração personalizada de canais (email, push, SMS)
 
 ### 👥 Gestão de Usuários (Administradores)
+
 - CRUD completo de usuários
 - Gerenciamento de permissões
 - Ativação/desativação de contas
@@ -104,6 +110,7 @@ O **Sistema de Ponto Eletrônico** é uma aplicação web completa desenvolvida 
 ## 🛠️ Tecnologias
 
 ### Frontend
+
 - **[React 18](https://reactjs.org/)** - Biblioteca UI
 - **[TypeScript](https://www.typescriptlang.org/)** - Tipagem estática
 - **[Vite](https://vitejs.dev/)** - Build tool e dev server
@@ -119,11 +126,13 @@ O **Sistema de Ponto Eletrônico** é uma aplicação web completa desenvolvida 
 - **[Lucide React](https://lucide.dev/)** - Ícones
 
 ### Backend / Database
+
 - **[Supabase](https://supabase.com/)** - Backend as a Service (PostgreSQL)
 - **[PostgreSQL](https://www.postgresql.org/)** - Banco de dados relacional
 - **[Dexie.js](https://dexie.org/)** - IndexedDB para modo offline
 
 ### DevOps & Tools
+
 - **[ESLint](https://eslint.org/)** - Linter
 - **[Prettier](https://prettier.io/)** - Formatador de código
 - **[Vite PWA Plugin](https://vite-pwa-org.netlify.app/)** - Progressive Web App
@@ -192,6 +201,7 @@ VITE_SUPABASE_ANON_KEY=sua-chave-anon-publica
 ```
 
 > 💡 **Onde encontrar essas informações:**
+>
 > - Acesse seu projeto no Supabase
 > - Vá em **Settings** → **API**
 > - Copie a **URL** e a **anon/public key**
@@ -212,12 +222,12 @@ Acesse: **http://localhost:5173**
 
 O schema SQL já cria 4 usuários de teste com senha `123`:
 
-| Username | Senha | Cargo | Email |
-|----------|-------|-------|-------|
-| `teste` | `123` | ADMINISTRADOR | teste@prefeitura.gov.br |
-| `vigia` | `123` | VIGIA | vigia@prefeitura.gov.br |
-| `vigilante` | `123` | VIGILANTE | vigilante@prefeitura.gov.br |
-| `guarda` | `123` | GUARDA | guarda@prefeitura.gov.br |
+| Username    | Senha | Cargo         | Email                       |
+| ----------- | ----- | ------------- | --------------------------- |
+| `teste`     | `123` | ADMINISTRADOR | teste@prefeitura.gov.br     |
+| `vigia`     | `123` | VIGIA         | vigia@prefeitura.gov.br     |
+| `vigilante` | `123` | VIGILANTE     | vigilante@prefeitura.gov.br |
+| `guarda`    | `123` | GUARDA        | guarda@prefeitura.gov.br    |
 
 ### Personalização
 
@@ -268,21 +278,27 @@ O schema SQL já cria 4 usuários de teste com senha `123`:
 <div align="center">
 
 ### 🏠 Página Inicial
+
 ![Página Inicial](./docs/images/home.png)
 
 ### 🔐 Login
+
 ![Login](./docs/images/login.png)
 
 ### 📊 Dashboard
+
 ![Dashboard](./docs/images/dashboard.png)
 
 ### ⏰ Registro de Ponto
+
 ![Registro de Ponto](./docs/images/registro-ponto.png)
 
 ### 📅 Gestão de Escalas
+
 ![Escalas](./docs/images/escalas.png)
 
 ### 📱 Versão Mobile
+
 ![Mobile](./docs/images/mobile.png)
 
 </div>
@@ -414,6 +430,7 @@ Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/):
 - `chore:` Tarefas de build/configuração
 
 Exemplo:
+
 ```bash
 git commit -m "feat: adiciona filtro de data no relatório"
 git commit -m "fix: corrige bug no registro de ponto"
@@ -425,6 +442,7 @@ git commit -m "docs: atualiza README com novas instruções"
 ## 📝 Roadmap
 
 ### ✅ Implementado
+
 - [x] Sistema de autenticação completo
 - [x] Registro de ponto com geolocalização
 - [x] Dashboard com estatísticas
@@ -435,13 +453,14 @@ git commit -m "docs: atualiza README com novas instruções"
 - [x] Interface responsiva
 
 ### 🚧 Em Desenvolvimento
+
 - [ ] Reconhecimento facial para validação
-- [ ] Integração com biometria
 - [ ] Aplicativo mobile nativo (React Native)
 - [ ] Relatórios avançados com BI
 - [ ] API REST documentada (Swagger)
 
 ### 📋 Planejado
+
 - [ ] Integração com folha de pagamento
 - [ ] Chat em tempo real
 - [ ] Módulo de treinamentos

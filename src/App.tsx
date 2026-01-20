@@ -362,7 +362,7 @@ const App = () => (
               }
             />
             <Route
-              path="/funcionario/escala"
+              path="/funcionario/escalas"
               element={
                 <RequireAuth allowedRoles={["VIGIA", "VIGILANTE", "GUARDA"]}>
                   <EmployeeEscala />

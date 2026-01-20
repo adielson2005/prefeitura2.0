@@ -4,14 +4,7 @@
  */
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { 
-  Home, 
-  Clock, 
-  Calendar, 
-  History, 
-  Bell, 
-  User 
-} from "lucide-react";
+import { Home, Calendar, User, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -32,24 +25,19 @@ export function BottomNav() {
       path: "/funcionario",
     },
     {
-      icon: Clock,
-      label: "Ponto",
-      path: "/funcionario/ponto",
-    },
-    {
       icon: Calendar,
       label: "Escala",
-      path: "/funcionario/escala",
-    },
-    {
-      icon: History,
-      label: "Histórico",
-      path: "/funcionario/historico",
+      path: "/funcionario/escalas",
     },
     {
       icon: User,
       label: "Perfil",
       path: "/funcionario/perfil",
+    },
+    {
+      icon: Settings,
+      label: "Config",
+      path: "/funcionario/configuracoes",
     },
   ];
 
@@ -68,23 +56,23 @@ export function BottomNav() {
               onClick={() => navigate(item.path)}
               className={cn(
                 "flex flex-col items-center justify-center flex-1 h-full relative transition-colors",
-                active
-                  ? "text-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
+                active ? "text-blue-600" : "text-gray-500 hover:text-gray-700"
               )}
             >
               <div className="relative">
                 <Icon className={cn("h-6 w-6", active && "scale-110")} />
                 {item.badge && item.badge > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
-                    {item.badge > 9 ? '9+' : item.badge}
+                    {item.badge > 9 ? "9+" : item.badge}
                   </span>
                 )}
               </div>
-              <span className={cn(
-                "text-[10px] mt-1 font-medium",
-                active && "font-bold"
-              )}>
+              <span
+                className={cn(
+                  "text-[10px] mt-1 font-medium",
+                  active && "font-bold"
+                )}
+              >
                 {item.label}
               </span>
               {active && (

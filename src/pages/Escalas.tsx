@@ -5,15 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { dataService } from "@/lib/dataService";
-import { 
-  Calendar as CalendarIcon, 
-  ChevronLeft, 
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
   ChevronRight,
   Plus,
   Users,
   CalendarOff,
   Clock,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 
 const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -28,25 +28,37 @@ const categoryColors = {
 export default function Escalas() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0); // 0 = Janeiro 2026
   const [showNewModal, setShowNewModal] = useState(false);
-  
+
   const months = [
-    "Janeiro 2026", "Fevereiro 2026", "Março 2026", "Abril 2026",
-    "Maio 2026", "Junho 2026", "Julho 2026", "Agosto 2026",
-    "Setembro 2026", "Outubro 2026", "Novembro 2026", "Dezembro 2026"
+    "Janeiro 2026",
+    "Fevereiro 2026",
+    "Março 2026",
+    "Abril 2026",
+    "Maio 2026",
+    "Junho 2026",
+    "Julho 2026",
+    "Agosto 2026",
+    "Setembro 2026",
+    "Outubro 2026",
+    "Novembro 2026",
+    "Dezembro 2026",
   ];
-  
+
   const currentMonth = months[currentMonthIndex];
-  
+
   const handlePrevMonth = () => {
     if (currentMonthIndex > 0) setCurrentMonthIndex(currentMonthIndex - 1);
   };
-  
+
   const handleNextMonth = () => {
-    if (currentMonthIndex < months.length - 1) setCurrentMonthIndex(currentMonthIndex + 1);
+    if (currentMonthIndex < months.length - 1)
+      setCurrentMonthIndex(currentMonthIndex + 1);
   };
-  const [newLeaveName, setNewLeaveName] = useState('');
-  const [newLeaveDate, setNewLeaveDate] = useState('');
-  const [newLeaveCategory, setNewLeaveCategory] = useState<'VIGIA' | 'VIGILANTE' | 'GUARDA'>('VIGIA');
+  const [newLeaveName, setNewLeaveName] = useState("");
+  const [newLeaveDate, setNewLeaveDate] = useState("");
+  const [newLeaveCategory, setNewLeaveCategory] = useState<
+    "VIGIA" | "VIGILANTE" | "GUARDA"
+  >("VIGIA");
   const [leaves, setLeaves] = useState(dataService.getLeaves());
 
   useEffect(() => {
@@ -60,30 +72,32 @@ export default function Escalas() {
   const generateCalendarDays = () => {
     const days = [];
     const startDay = 4; // Janeiro 2026 começa na Quinta (index 4)
-    
+
     // Add empty cells for days before the 1st
     for (let i = 0; i < startDay; i++) {
       days.push({ day: null, leaves: [] });
     }
-    
+
     // Add days of the month with dynamic leaves
     for (let i = 1; i <= 31; i++) {
-      const dayLeaves = leaves.filter(leave => {
-        const [day] = leave.date.split('/').map(Number);
-        return day === i;
-      }).map(leave => ({
-        name: leave.name,
-        category: leave.category
-      }));
-      
+      const dayLeaves = leaves
+        .filter((leave) => {
+          const [day] = leave.date.split("/").map(Number);
+          return day === i;
+        })
+        .map((leave) => ({
+          name: leave.name,
+          category: leave.category,
+        }));
+
       // Feriado no dia 25
       if (i === 25) {
         dayLeaves.push({ name: "Feriado", category: "FERIADO" as const });
       }
-      
+
       days.push({ day: i, leaves: dayLeaves });
     }
-    
+
     return days;
   };
 
@@ -92,33 +106,35 @@ export default function Escalas() {
 
   const handleCreateLeave = () => {
     if (!newLeaveName.trim() || !newLeaveDate) return;
-    
-    const [day, month] = newLeaveDate.split('-').map(Number);
-    const dayOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][new Date(2026, month - 1, day).getDay()];
-    
+
+    const [day, month] = newLeaveDate.split("-").map(Number);
+    const dayOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][
+      new Date(2026, month - 1, day).getDay()
+    ];
+
     dataService.addLeave({
       professionalId: String(Date.now()),
       name: newLeaveName,
       category: newLeaveCategory,
-      date: `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}`,
+      date: `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}`,
       dayOfWeek,
-      approved: true
+      approved: true,
     });
-    
-    setNewLeaveName('');
-    setNewLeaveDate('');
-    setNewLeaveCategory('VIGIA');
+
+    setNewLeaveName("");
+    setNewLeaveDate("");
+    setNewLeaveCategory("VIGIA");
     setShowNewModal(false);
   };
 
   return (
-    <AppLayout 
-      title="Folgas e Escalas" 
+    <AppLayout
+      title="Folgas e Escalas"
       subtitle="Gestão de escalas e folgas programadas"
     >
-      <div className="space-y-6">
+      <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
         {/* Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <MetricCard
             title="Folgas este Mês"
             value={leaves.length}
@@ -148,30 +164,35 @@ export default function Escalas() {
         </div>
 
         {/* Calendar */}
-        <div className="card-institutional p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
+        <div className="card-institutional p-4 sm:p-5 md:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <Button
+                variant="ghost"
                 size="icon"
                 onClick={handlePrevMonth}
                 disabled={currentMonthIndex === 0}
-                className="disabled:opacity-50 disabled:cursor-not-allowed"
+                className="disabled:opacity-50 disabled:cursor-not-allowed h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
-              <h3 className="text-lg font-display font-bold text-foreground">{currentMonth}</h3>
-              <Button 
-                variant="ghost" 
+              <h3 className="text-base sm:text-lg font-display font-bold text-foreground truncate">
+                {currentMonth}
+              </h3>
+              <Button
+                variant="ghost"
                 size="icon"
                 onClick={handleNextMonth}
                 disabled={currentMonthIndex === months.length - 1}
-                className="disabled:opacity-50 disabled:cursor-not-allowed"
+                className="disabled:opacity-50 disabled:cursor-not-allowed h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </div>
-            <Button variant="institutional" onClick={() => setShowNewModal(true)}>
+            <Button
+              variant="institutional"
+              onClick={() => setShowNewModal(true)}
+            >
               <Plus className="h-4 w-4" />
               Nova Folga
             </Button>
@@ -180,32 +201,40 @@ export default function Escalas() {
           {/* Week Days Header */}
           <div className="grid grid-cols-7 gap-1 mb-2">
             {weekDays.map((day) => (
-              <div key={day} className="text-center py-2 text-xs font-semibold text-muted-foreground uppercase">
+              <div
+                key={day}
+                className="text-center py-2 text-xs font-semibold text-muted-foreground uppercase"
+              >
                 {day}
               </div>
             ))}
           </div>
 
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
             {calendarDays.map((dayData, index) => (
               <div
                 key={index}
                 className={cn(
                   "min-h-[100px] p-2 rounded-lg border transition-all duration-200",
                   dayData.day === null && "bg-transparent border-transparent",
-                  dayData.day !== null && "border-border hover:border-primary/50 hover:shadow-sm cursor-pointer",
+                  dayData.day !== null &&
+                    "border-border hover:border-primary/50 hover:shadow-sm cursor-pointer",
                   dayData.day === 8 && "bg-primary/5 border-primary/30",
-                  dayData.leaves.some(l => l.category === "FERIADO") && "bg-status-danger/5 border-status-danger/30"
+                  dayData.leaves.some((l) => l.category === "FERIADO") &&
+                    "bg-status-danger/5 border-status-danger/30"
                 )}
               >
                 {dayData.day && (
                   <>
-                    <span className={cn(
-                      "text-sm font-medium",
-                      dayData.day === 8 && "text-primary",
-                      dayData.leaves.some(l => l.category === "FERIADO") && "text-status-danger"
-                    )}>
+                    <span
+                      className={cn(
+                        "text-sm font-medium",
+                        dayData.day === 8 && "text-primary",
+                        dayData.leaves.some((l) => l.category === "FERIADO") &&
+                          "text-status-danger"
+                      )}
+                    >
                       {dayData.day}
                     </span>
                     <div className="mt-1 space-y-1">
@@ -214,7 +243,9 @@ export default function Escalas() {
                           key={i}
                           className={cn(
                             "text-[10px] px-1.5 py-0.5 rounded truncate",
-                            categoryColors[leave.category as keyof typeof categoryColors]
+                            categoryColors[
+                              leave.category as keyof typeof categoryColors
+                            ]
                           )}
                         >
                           {leave.name}
@@ -259,21 +290,23 @@ export default function Escalas() {
         {showNewModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-lg">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Nova Folga</h3>
-              <input 
-                value={newLeaveName} 
-                onChange={(e) => setNewLeaveName(e.target.value)} 
-                placeholder="Nome do profissional" 
-                className="w-full px-3 py-2 border border-border rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-primary/30" 
+              <h3 className="text-lg font-semibold text-foreground mb-4">
+                Nova Folga
+              </h3>
+              <input
+                value={newLeaveName}
+                onChange={(e) => setNewLeaveName(e.target.value)}
+                placeholder="Nome do profissional"
+                className="w-full px-3 py-2 border border-border rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
-              <input 
-                type="date" 
-                value={newLeaveDate} 
-                onChange={(e) => setNewLeaveDate(e.target.value)} 
-                className="w-full px-3 py-2 border border-border rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-primary/30" 
+              <input
+                type="date"
+                value={newLeaveDate}
+                onChange={(e) => setNewLeaveDate(e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
-              <select 
-                value={newLeaveCategory} 
+              <select
+                value={newLeaveCategory}
                 onChange={(e) => setNewLeaveCategory(e.target.value as any)}
                 className="w-full px-3 py-2 border border-border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
@@ -282,7 +315,12 @@ export default function Escalas() {
                 <option value="GUARDA">Guarda</option>
               </select>
               <div className="flex gap-2 justify-end">
-                <Button variant="outline" onClick={() => setShowNewModal(false)}>Cancelar</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowNewModal(false)}
+                >
+                  Cancelar
+                </Button>
                 <Button onClick={handleCreateLeave}>Criar</Button>
               </div>
             </div>
@@ -305,22 +343,33 @@ export default function Escalas() {
                   </div>
                   <div>
                     <p className="font-medium text-foreground">{leave.name}</p>
-                    <p className="text-xs text-muted-foreground">{leave.category}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {leave.category}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge variant={
-                    leave.category === "VIGIA" ? "vigia" :
-                    leave.category === "VIGILANTE" ? "vigilante" : "guarda"
-                  }>
+                  <Badge
+                    variant={
+                      leave.category === "VIGIA"
+                        ? "vigia"
+                        : leave.category === "VIGILANTE"
+                          ? "vigilante"
+                          : "guarda"
+                    }
+                  >
                     {leave.approved ? "Aprovada" : "Pendente"}
                   </Badge>
-                  <span className="text-sm font-medium text-foreground">{leave.date} - {leave.dayOfWeek}</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {leave.date} - {leave.dayOfWeek}
+                  </span>
                 </div>
               </div>
             ))}
             {leaves.length === 0 && (
-              <p className="text-center text-muted-foreground py-8">Nenhuma folga programada</p>
+              <p className="text-center text-muted-foreground py-8">
+                Nenhuma folga programada
+              </p>
             )}
           </div>
         </div>

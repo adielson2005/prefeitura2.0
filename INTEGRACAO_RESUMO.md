@@ -9,6 +9,7 @@ O **Portal do Funcionário** foi **100% integrado** ao sistema administrativo ex
 ## 📊 O QUE FOI ENTREGUE
 
 ### ✅ **Sistema Unificado**
+
 - [x] Um único codebase
 - [x] Uma única autenticação
 - [x] Dois módulos distintos e otimizados
@@ -16,6 +17,7 @@ O **Portal do Funcionário** foi **100% integrado** ao sistema administrativo ex
 - [x] Redirecionamento automático
 
 ### ✅ **Portal do Funcionário (Mobile-First)**
+
 - [x] Dashboard intuitivo
 - [x] Registro de ponto (4 tipos)
 - [x] Visualização de escala
@@ -25,6 +27,7 @@ O **Portal do Funcionário** foi **100% integrado** ao sistema administrativo ex
 - [x] Layout responsivo
 
 ### ✅ **PWA (Progressive Web App)**
+
 - [x] Instalável como app
 - [x] Service Worker configurado
 - [x] Cache offline
@@ -33,6 +36,7 @@ O **Portal do Funcionário** foi **100% integrado** ao sistema administrativo ex
 - [x] Página offline
 
 ### ✅ **Segurança e Autenticação**
+
 - [x] Login único integrado
 - [x] Proteção de rotas por role
 - [x] Timeout de sessão
@@ -44,16 +48,19 @@ O **Portal do Funcionário** foi **100% integrado** ao sistema administrativo ex
 ## 🚀 COMO INICIAR (3 Passos)
 
 ### 1️⃣ Instalar
+
 ```bash
 npm install
 ```
 
 ### 2️⃣ Rodar
+
 ```bash
 npm run dev
 ```
 
 ### 3️⃣ Testar
+
 **Gerente:** `teste` / `123`  
 **Funcionário:** `funcionario` / `123`
 
@@ -62,9 +69,11 @@ npm run dev
 ## 📁 ARQUIVOS CRIADOS
 
 ### **Sistema de Roles:**
+
 - [src/lib/roleGuard.ts](src/lib/roleGuard.ts)
 
 ### **Portal do Funcionário:**
+
 - [src/modules/employee/layouts/EmployeeLayout.tsx](src/modules/employee/layouts/EmployeeLayout.tsx)
 - [src/modules/employee/components/BottomNav.tsx](src/modules/employee/components/BottomNav.tsx)
 - [src/modules/employee/pages/Dashboard.tsx](src/modules/employee/pages/Dashboard.tsx)
@@ -74,12 +83,14 @@ npm run dev
 - [src/modules/employee/pages/Perfil.tsx](src/modules/employee/pages/Perfil.tsx)
 
 ### **PWA:**
+
 - [public/manifest.json](public/manifest.json)
 - [public/sw.js](public/sw.js)
 - [public/offline.html](public/offline.html)
-- [public/icon-*.svg](public/) (3 ícones)
+- [public/icon-\*.svg](public/) (3 ícones)
 
 ### **Documentação:**
+
 - [PORTAL_FUNCIONARIO_README.md](PORTAL_FUNCIONARIO_README.md) - Documentação completa
 - [INSTALACAO_RAPIDA.md](INSTALACAO_RAPIDA.md) - Guia rápido
 - [GUIA_ICONES_PWA.md](GUIA_ICONES_PWA.md) - Como criar ícones
@@ -120,31 +131,34 @@ npm run dev
 
 ## 🔐 ROLES IMPLEMENTADOS
 
-| Role | Módulo | Rotas |
-|------|--------|-------|
-| **ADMINISTRADOR** | Admin | `/`, `/vigias`, `/vigilantes`, etc. |
-| **GERENTE** | Admin | `/`, `/vigias`, `/vigilantes`, etc. |
-| **COORDENADOR** | Admin | `/`, `/vigias`, `/vigilantes`, etc. |
-| **SUPERVISOR** | Admin | `/`, `/vigias`, `/vigilantes`, etc. |
-| **VIGILANTE** | Employee | `/funcionario/*` |
-| **VIGIA** | Employee | `/funcionario/*` |
-| **GUARDA** | Employee | `/funcionario/*` |
+| Role              | Módulo   | Rotas                               |
+| ----------------- | -------- | ----------------------------------- |
+| **ADMINISTRADOR** | Admin    | `/`, `/vigias`, `/vigilantes`, etc. |
+| **GERENTE**       | Admin    | `/`, `/vigias`, `/vigilantes`, etc. |
+| **COORDENADOR**   | Admin    | `/`, `/vigias`, `/vigilantes`, etc. |
+| **SUPERVISOR**    | Admin    | `/`, `/vigias`, `/vigilantes`, etc. |
+| **VIGILANTE**     | Employee | `/funcionario/*`                    |
+| **VIGIA**         | Employee | `/funcionario/*`                    |
+| **GUARDA**        | Employee | `/funcionario/*`                    |
 
 ---
 
 ## 📲 RECURSOS PWA
 
 ### **Instalável:**
+
 - ✅ Android (Chrome)
 - ✅ iOS (Safari)
 - ✅ Desktop (Chrome, Edge)
 
 ### **Offline:**
+
 - ✅ Cache de assets estáticos
 - ✅ Página offline personalizada
 - ✅ Estratégia Network-First
 
 ### **Features Nativas:**
+
 - ✅ Splash screen
 - ✅ Ícone na tela inicial
 - ✅ Notificações (preparado)
@@ -156,6 +170,7 @@ npm run dev
 ## 🎨 UI/UX
 
 ### **Portal Funcionário:**
+
 - ✨ Interface limpa e moderna
 - 📱 Mobile-first (touch-friendly)
 - 🎯 Navegação inferior intuitiva
@@ -164,6 +179,7 @@ npm run dev
 - 🌈 Tema azul (#2563eb)
 
 ### **Painel Admin:**
+
 - 💼 Layout desktop profissional
 - 📊 Dashboards e relatórios
 - 🗂️ Gestão completa
@@ -184,6 +200,7 @@ npm run dev
 ## 🧪 TESTES RECOMENDADOS
 
 ### **Funcionais:**
+
 - [ ] Login como gerente
 - [ ] Login como funcionário
 - [ ] Redirecionamento correto
@@ -191,6 +208,7 @@ npm run dev
 - [ ] Logout
 
 ### **Mobile:**
+
 - [ ] Navegação inferior
 - [ ] Touch interactions
 - [ ] Responsividade
@@ -198,6 +216,7 @@ npm run dev
 - [ ] Modo offline
 
 ### **Segurança:**
+
 - [ ] Acesso negado a rotas não autorizadas
 - [ ] Timeout de sessão
 - [ ] Proteção contra força bruta
@@ -207,18 +226,20 @@ npm run dev
 ## 📈 PRÓXIMOS PASSOS (Opcional)
 
 ### **Backend:**
+
 1. Implementar API real de ponto
 2. Integrar com banco de dados
 3. Sincronização de dados
 
 ### **Melhorias:**
+
 1. Converter ícones SVG para PNG
 2. Geolocalização real (GPS)
 3. Notificações push
 4. Modo offline completo
-5. Biometria
 
 ### **Produção:**
+
 1. Deploy em servidor
 2. Configurar HTTPS
 3. Testar PWA em produção
@@ -228,17 +249,18 @@ npm run dev
 
 ## 📚 DOCUMENTAÇÃO
 
-| Arquivo | Descrição |
-|---------|-----------|
-| [PORTAL_FUNCIONARIO_README.md](PORTAL_FUNCIONARIO_README.md) | Documentação técnica completa |
-| [INSTALACAO_RAPIDA.md](INSTALACAO_RAPIDA.md) | Guia de instalação rápida |
-| [GUIA_ICONES_PWA.md](GUIA_ICONES_PWA.md) | Como criar ícones profissionais |
+| Arquivo                                                      | Descrição                       |
+| ------------------------------------------------------------ | ------------------------------- |
+| [PORTAL_FUNCIONARIO_README.md](PORTAL_FUNCIONARIO_README.md) | Documentação técnica completa   |
+| [INSTALACAO_RAPIDA.md](INSTALACAO_RAPIDA.md)                 | Guia de instalação rápida       |
+| [GUIA_ICONES_PWA.md](GUIA_ICONES_PWA.md)                     | Como criar ícones profissionais |
 
 ---
 
 ## ✨ DESTAQUES TÉCNICOS
 
 ### **Arquitetura:**
+
 - ✅ Modular e escalável
 - ✅ Separação de responsabilidades
 - ✅ Zero duplicação de código
@@ -246,6 +268,7 @@ npm run dev
 - ✅ ESLint configurado
 
 ### **Boas Práticas:**
+
 - ✅ Components reutilizáveis
 - ✅ Hooks personalizados
 - ✅ Context API (quando necessário)
@@ -253,6 +276,7 @@ npm run dev
 - ✅ Lazy loading
 
 ### **UX:**
+
 - ✅ Loading states
 - ✅ Error handling
 - ✅ Feedback visual
@@ -293,6 +317,7 @@ npm run dev
 ## 📞 INFORMAÇÕES TÉCNICAS
 
 **Tecnologias:**
+
 - React 18 + TypeScript
 - Vite
 - React Router v6
@@ -301,6 +326,7 @@ npm run dev
 - PWA (Service Worker)
 
 **Compatibilidade:**
+
 - ✅ Chrome/Edge (Desktop + Mobile)
 - ✅ Safari (Desktop + iOS)
 - ✅ Firefox
@@ -321,6 +347,7 @@ npm run dev
 A integração foi **concluída com sucesso**. O sistema está totalmente funcional, seguindo as melhores práticas de desenvolvimento, com arquitetura escalável e código limpo.
 
 **Teste agora:**
+
 ```bash
 npm run dev
 ```

@@ -37,8 +37,7 @@ interface EmployeeLayoutProps {
 }
 
 const menuItems = [
-  { path: "/funcionario", icon: Home, label: "Início" },
-  { path: "/funcionario/ponto", icon: Clock, label: "Ponto" },
+  { path: "/funcionario", icon: Home, label: "Dashboard" },
   { path: "/funcionario/escalas", icon: Calendar, label: "Escalas" },
   { path: "/funcionario/perfil", icon: User, label: "Perfil" },
   {
